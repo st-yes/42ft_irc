@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <string>
 #include "User.hpp"
+#include "commands.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <map>
