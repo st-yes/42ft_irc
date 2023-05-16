@@ -1,10 +1,11 @@
 #include "Server.hpp"
 
-Server::Server(int p, int s){
+Server::Server(int p, int s)
+{
     this->NumofCli = 0;
     this->password = s;
     this->port = p;
-    std::cout << "Server Available!" << std::endl;
+    // std::cout << "Server Available!" << std::endl;
 }
 
 Server::~Server(){
@@ -25,13 +26,16 @@ Server::Server(Server const &p){
 
 void    Server::Create_Connection(){
     int listen_socket = socket(AF_INET6, SOCK_STREAM, 0); // Creating a Socket, Used IPv6.
+    if (listen_socket == -1)
+        errorExit(SOCKET_FD);
+    std::cout << "Server Available!" << std::endl;
     sockaddr_in6 sock_Addr; // Struct to store the connection infos.
     bzero(&sock_Addr, sizeof(sock_Addr)); // initializing the struct.
     sock_Addr.sin6_family = AF_INET6; // IPv6
     sock_Addr.sin6_port = htons(this->port); // making sure the port used will be read in big Endian.
     if (bind(listen_socket, (sockaddr *)&sock_Addr, sizeof(sock_Addr)) < 0){ // Binding the Socket to the port to listen to any incoming connections
         std::cerr << "Binding Error 1" << std::endl;
-        exit (1);
+        exit (1);Ç
     }
     if (listen(listen_socket, 1) < 0){ // listening for any connections.
         std::cerr << "Could not listen !" << std::endl;
