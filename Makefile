@@ -9,7 +9,7 @@ OBJ_PATH= ./objects/
 INC= -I ./includes/
 
 SRC= main.cpp\
-	Server.cpp\
+	server.cpp\
 	User.cpp\
 	errorMsgs.cpp\
 	check.cpp\

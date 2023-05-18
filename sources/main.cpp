@@ -12,11 +12,11 @@ bool    parse_args(char **s)
         errorMsg(PORT);
         return (false);
     }
-    if (!validPass(s[2]))
-    {
-        errorMsg(PASSWORD);
-        return (false);
-    }
+    // if (!validPass(s[2]))
+    // {
+    //     errorMsg(PASSWORD);
+    //     return (false);
+    // }
     return (true);
 }
 
@@ -30,5 +30,5 @@ int main(int ac, char **av, char **env)
     if (!parse_args(av))
         return (EXIT_FAILURE);
     Server banana(atoi(av[1]), atoi(av[2]));
-    banana.Create_Connection();
+    banana.createConnection();
 }

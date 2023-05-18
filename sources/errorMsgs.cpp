@@ -11,10 +11,10 @@ void	errorMsg(int error)
 		std::cerr << "invalid port number" << std::endl;
 }
 
-void	errorExit(int error)
+/*--  errno variable --*/
+void	errnoCheck(std::string	func)
 {
-	std::cerr << "ERROR: ";
-	if (error == SOCKET_FD)
-		std::cerr << "server unavailable " << std::endl;
+	std::cerr << "ERROR ";
+	std::cerr << func << ": " << strerror(errno);
 	exit(EXIT_FAILURE);
 }

@@ -2,6 +2,9 @@
 
 # define MAX_PORT 65535
 # define MIN_PORT 1
+# define BACKLOG 10
+# define BUFFER_SIZE 500
+
 
 enum	errors
 {
@@ -14,4 +17,4 @@ enum	errors
 void	errorMsg(int error);
 bool	validPort(std::string s);
 bool	validPass(std::string s);
-void	errorExit(int error);
+void	errnoCheck(std::string	func);
