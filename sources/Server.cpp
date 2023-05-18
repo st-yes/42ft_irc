@@ -35,7 +35,7 @@ void    Server::Create_Connection(){
     sock_Addr.sin6_port = htons(this->port); // making sure the port used will be read in big Endian.
     if (bind(listen_socket, (sockaddr *)&sock_Addr, sizeof(sock_Addr)) < 0){ // Binding the Socket to the port to listen to any incoming connections
         std::cerr << "Binding Error 1" << std::endl;
-        exit (1);Ç
+        exit (1);
     }
     if (listen(listen_socket, 1) < 0){ // listening for any connections.
         std::cerr << "Could not listen !" << std::endl;
