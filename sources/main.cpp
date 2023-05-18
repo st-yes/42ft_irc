@@ -29,6 +29,7 @@ int main(int ac, char **av, char **env)
     }
     if (!parse_args(av))
         return (EXIT_FAILURE);
-    Server banana(atoi(av[1]), atoi(av[2]));
+    std::string pass(av[2]);
+    Server banana(atoi(av[1]), pass);
     banana.createConnection();
 }

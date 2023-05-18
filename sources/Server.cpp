@@ -1,7 +1,7 @@
 
 #include "Server.hpp"
 
-Server::Server(int p, int s)
+Server::Server(int p, std::string s)
 {
     this->numOfCli = 0;
     this->password = s;
@@ -35,8 +35,9 @@ void	Server::createConnection()
 	sockaddr		*cliAddrBind;
 	socklen_t		clientSocketSize;
 	int				receivedBytes;
-	
+	int				tries = 3;
 	bool			passwordPending = true;
+	std::string	passwordRequest = "Please enter your password to authenticate: ";
 
 	servSocket = socket(AF_INET6, SOCK_STREAM, 0);
 	if (servSocket == -1)
@@ -60,9 +61,14 @@ void	Server::createConnection()
 		char buffer[BUFFER_SIZE];
 		while (true)
 		{
-			std::string	passwordRequest = "Please enter your password to authenticate: ";
 			if (passwordPending == true)
 			{
+				if (tries == 0)
+				{
+					std::cout << "Access denied, leave." << std::endl;
+					close (clientSocket);
+					break;
+				}
 				if (send(clientSocket, passwordRequest.c_str(), passwordRequest.length(), 0) == -1)
 					errnoCheck("send()");
 				receivedBytes = recv(clientSocket, buffer, BUFFER_SIZE, 0);
@@ -74,8 +80,15 @@ void	Server::createConnection()
 					close(clientSocket);
 					break;
 				}
-				buffer[receivedBytes] = '\0';
-				passwordPending = false;
+				buffer[receivedBytes - 1] = '\0';
+				std::string		pass(buffer);
+				if (pass != this->password)
+				{
+					passwordRequest =  "Invalid Password, please try harder this time (" + std::to_string(tries) + ") remaining.";
+					tries--;
+				}
+				else
+					passwordPending = false;
 			}
 			else
 			{
@@ -90,7 +103,7 @@ void	Server::createConnection()
 					break;
 				}
 				//for first time check password (give 3 tries ...)
-				buffer[receivedBytes] = '\0';
+				buffer[receivedBytes - 1] = '\0';
 				if (send(clientSocket, buffer, strlen(buffer), 0) == -1)
 					errnoCheck("send()");
 			}
