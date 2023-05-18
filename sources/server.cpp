@@ -65,7 +65,9 @@ void	Server::createConnection()
 			{
 				if (tries == 0)
 				{
-					std::cout << "Access denied, leave." << std::endl;
+					passwordRequest = "Access denied, leave.";
+					if (send(clientSocket, passwordRequest.c_str(), passwordRequest.length(), 0) == -1)
+						errnoCheck("send()");
 					close (clientSocket);
 					break;
 				}
@@ -84,8 +86,9 @@ void	Server::createConnection()
 				std::string		pass(buffer);
 				if (pass != this->password)
 				{
-					passwordRequest =  "Invalid Password, please try harder this time (" + std::to_string(tries) + ") remaining.";
 					tries--;
+					passwordRequest =  "Invalid Password, please try harder this time (" + std::to_string(tries) + ") remaining: ";
+					
 				}
 				else
 					passwordPending = false;
@@ -108,8 +111,9 @@ void	Server::createConnection()
 					errnoCheck("send()");
 			}
 		}
+		close (clientSocket);
+		close (servSocket);
 	}
-	close(servSocket);
 }
 
 bool	Server::checkPassword(int fd)
