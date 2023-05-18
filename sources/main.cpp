@@ -12,11 +12,11 @@ bool    parse_args(char **s)
         errorMsg(PORT);
         return (false);
     }
-    // if (!validPass(s[2]))
-    // {
-    //     errorMsg(PASSWORD);
-    //     return (false);
-    // }
+    if (!validPass(s[2]))
+    {
+        errorMsg(PASSWORD);
+        return (false);
+    }
     return (true);
 }
 
