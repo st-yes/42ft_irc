@@ -11,6 +11,10 @@ void	errorMsg(int error)
 		std::cerr << "invalid port number" << std::endl;
 }
 
+void	errnoCheck(std::string	func)
+{
+	std::cerr << "ERROR ";
+	std::cerr << func << ": " << strerror(errno);
 void	errorExit(int error)
 {
 	std::cerr << "ERROR: ";
