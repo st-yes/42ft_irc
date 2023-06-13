@@ -1,49 +1,64 @@
 #ifndef SERVER_HPP
 #define SERVER_HPP
 
-#include <sstream>
-#include <iostream>
-#include <iomanip>
-#include <cstring>
-#include <cstdlib>
-#include "User.hpp"
-#include "commands.hpp"
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <unistd.h>
-#include <map>
+# include <sstream>
+# include <iostream>
+# include <iomanip>
+# include <cstring>
+# include <cstdlib>
+# include <sys/socket.h>
+# include <netinet/in.h>
+# include <unistd.h>
+# include <map>
+# include <vector>
+# include <poll.h>
+# include <fcntl.h>
+# include "User.hpp"
+# include "helperFunctions.hpp"
 
-class Server{
+class   Server{
     protected :
-        int numOfCli; // Store the number of connected Users on the Serv
-        std::map<int, User*>Users; // Store the User Objects and the FDs related to their sockets.
-        int port; // port number used for Serv communication
-        std::string password; // Password used to allow connection.
+        std::map<int, User*>    users;
+        std::vector<pollfd>     pollers;
+        std::string             passWord;
+        std::string             serverName;
+        int                     portNumber;
+        int                     numberOfCli;
+        int                     servSocketFd;
     public :
-        Server(int s, std::string p); // bla bla bla bla
-        Server(Server const &s); // bla bla bla bla
-        ~Server(); // bla bla bla bla
-        Server const &operator=(Server const &s); // bla bla bla bla
-        void    createConnection(); // Creating & connecting a socket both on the server and client side
-        User   *createUser(int fd); // Just wanted to test with a User.
-        bool    checkPassword(int fd); // Checking Passcode connection.
-        int NumofCli; // Store the number of connected Users on the Serv
-        std::map<int, User*>Users; // Store the User Objects and the FDs related to their sockets.
-        int port; // port number used for Serv communication
-        int password; // Password used to allow connection.
+        Server();
+        Server(int s, std::string p);
+        Server(Server const &p);
+        ~Server();
+        Server  const &operator=(Server const &p);
     public :
-        Server(int s, int p); // bla bla bla bla
-        Server(Server const &s); // bla bla bla bla
-        ~Server(); // bla bla bla bla
-        Server const &operator=(Server const &s); // bla bla bla bla
-        void    Create_Connection(); // Creating & connecting a socket both on the server and client side
-        User   *Create_User(int fd); // Just wanted to test with a User.
-        bool    check_passcode(int fd); // Checking Passcode connection.
-        
+        void    fConnection(int i, char *buffer, User *New);
+        void    regularConnection(char *buffer, int i);
+        void    createConnection();
+        void    Authentication();
+        void    nConnection();
+        void    oConnection(int i);
+        void    lostConnection(int fd, int i);
+        User    *createUser();
+        void	sendInstructions(int clientFd);
+        void	sendWelcome(int	clientFd, User *user);
+        void	sendNumericReply(const std::string& prefix, const std::string& replyCode,
+ std::string& nick, const std::string& message, int clientFd);
+        void	sendNumericReplyCommand(const std::string& prefix, const std::string& replyCode,
+ std::string nick,const std::string& command, const std::string& message, int clientFd);
+
+        int     searchForCredentials(std::string buffer, User *newUser, int o);
+        void    fetchTheFirst(std::string command, std::string buffer, User *newUser);
+        void    sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params);
+        bool	passCorrect(std::string passUser);
+        bool	nickAlreadyInUse(std::string nick, int i);
+
+    //add exeptions
+    class ProblemInFdServer : public std::exception
+    {
+        public:
+            virtual const char *what() const throw();
+    };
 };
-
-
-
-
 
 #endif

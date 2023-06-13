@@ -2,18 +2,17 @@ CC= g++
 
 FLAGS= #-Wall -Wextra -Werror 
 # can compile following the C++98 standard (C++ first version)
-EXTRA= -g -fsanitize=address 
+EXTRA= -fsanitize=address -g
 
-SRC_PATH= ./sources/
+SRC_PATH= ./src/
 OBJ_PATH= ./objects/
 INC= -I ./includes/
 
 SRC= main.cpp\
-	server.cpp\
+	Server.cpp\
 	User.cpp\
-	errorMsgs.cpp\
-	check.cpp\
-
+	helperFunctions.cpp\
+	handleCommands.cpp\
 
 NAME= ircserv
 
