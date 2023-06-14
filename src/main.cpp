@@ -1,15 +1,14 @@
-#include "../includes/everyThing.hpp"
+#include "Ft_irc.hpp"
 
-int main(int ac, char **av){
-    if (ac != 3)
+int main(int ac, char **av)
+{
+    try
     {
-        errorMsg(USAGE);
-        return (EXIT_FAILURE);
+        Server  server(ac, av);
+        server.createConnection();
     }
-    if (!parse_args(av))
-        return (EXIT_FAILURE);
-    std::string pass(av[2]);
-    Server      run(atoi(av[1]), pass);
-    run.createConnection();
-    return (0);
+    catch(const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
 }

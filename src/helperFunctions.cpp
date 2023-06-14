@@ -1,69 +1,7 @@
-#include "everyThing.hpp"
+#include "Ft_irc.hpp"
 
-/*-----------------------------PARSING-FUNCTIONS------------------------*/
-bool    parse_args(char **s)
-{
-    if (!validPort(s[1]))
-    {
-        errorMsg(PORT);
-        return (false);
-    }
-    return (true);
-}
-
-bool	validPort(std::string s)
-{
-	int	len;
-
-	len = s.size();
-	for (int i = 0; i < len; i++)
-		if (!std::isdigit(s[i]))
-			return (false);
-	if (std::atoi(s.c_str()) < MIN_PORT ||std::atoi(s.c_str()) > MAX_PORT)
-		return (false);
-	return (true);
-}
-
-bool	validPass(std::string s)
-{
-	int	len;
-
-	len = s.size();
-	for (int i = 0; i < len; i++)
-		if (!std::isdigit(s[i]))
-			return (false);
-	return (true);
-}
 
 /*------------------------------ERROR-FUNCTIONS-------------------------*/
-
-void	errorMsg(int error)
-{
-	std::cerr << "ERROR: ";
-	if (error == USAGE)
-		std::cerr << "usage: ./ircserv PORT PASSWORD" << std::endl;
-	else if (error == PASSWORD)
-		std::cerr << "invalid password" << std::endl;
-	else if (error == PORT)
-		std::cerr << "invalid port number" << std::endl;
-}
-
-void	errnoCheck(std::string	func)
-{
-	std::cerr << "ERROR ";
-	std::cerr << func << ": " << strerror(errno);
-	exit(EXIT_FAILURE);
-}
-
-bool has_only_spaces(const std::string &str)
-{
-    for (std::string::const_iterator it = str.begin(); it != str.end(); ++it)
-    {
-        if (!isspace(*it))
-			return false;
-    }
-    return true;
-}
 
 /* check if string has only spaces */
 bool hasOnlySpace(const std::string& str)
@@ -96,22 +34,6 @@ void	parsePassNick(User *newUser, std::string buffer, int start, int comm)
 	}
 }
 
-// void	parseNick(User *newUser, std::string buffer, int start)
-// {
-// 	int j;
-
-// 	i = 0;
-// 	j = start;
-	
-// 	while (j < buffer.length() && isspace(buffer[j]))
-// 		j++;
-// 	while (j < buffer.length())
-// 	{
-// 		if (isspace(buffer[j]))
-// 			break;
-// 		newUser->nick += buffer[j++];
-// 	}
-// }
 
 /*
 * parse USER command

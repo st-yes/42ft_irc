@@ -1,28 +1,8 @@
-#include "everyThing.hpp"
+#include "Ft_irc.hpp"
 
-void	Server::sendNumericReply(const std::string& prefix, const std::string& replyCode,
- std::string& nick, const std::string& message, int clientFd)
-{
-	std::string	reply;
-
-	reply = ":" + prefix + " " + replyCode + " " +  nick + " " + ":" + message + "\r\n";
-	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
-		errnoCheck("send()");
-}
-
-void	Server::sendNumericReplyCommand(const std::string& prefix, const std::string& replyCode,
- std::string nick, const std::string& command, const std::string& message, int clientFd)
-{
-	std::string	reply;
-
-	reply = ":" + prefix + " " + replyCode + " " +  nick + " " + command +  " " 
-	+ ":" + message + "\r\n";
-	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
-		errnoCheck("send()");
-}
-
-/*-- template try out of server reply 
-* :prefix numeric code param1 param2 ...
+/*-- 
+* template try out of server reply 
+* :prefix numeric code param1 param2 ... + \r\n 
 --*/
 void Server::sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params)
 {
@@ -39,7 +19,7 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 	}
 	reply += "\r\n";
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
-		errnoCheck("send()");
+		throw errorErrno();
 }
 
 /* connection established */
@@ -49,13 +29,17 @@ void	Server::sendWelcome(int	clientFd, User *user)
 
 	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + user->getNick() + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
 	if (send(clientFd, msg.c_str(), msg.length(), 0) == -1)
-		errnoCheck("send()");
-    msg = ":" + user->serverName + " has joined the server!\r\n";
-    for (int i = 0; i < this->pollers.size(); i++){
+		throw errorErrno();
+    msg = ":" + user->getNick() + " has joined the server!\r\n"; //message send to all those connected to socket ??
+    for (int i = 0; i < this->pollers.size(); i++)
+	{
         if (this->pollers[i].fd == this->servSocketFd)
             continue;
-        if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
-            errnoCheck("send()");
+		if (authenticated(this->pollers[i].fd))
+		{
+			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
+				throw errorErrno();
+		}
     }
 }
 
@@ -65,10 +49,8 @@ void	Server::sendInstructions(int clientFd)
 	std::string	instruct;
 	instruct = "You are trying to connect from a non official irc client\nPlease provide:\nP A S S\nN I C K\nU S E R\r\n";
 	if (send(clientFd, instruct.c_str(), instruct.length(), 0) == -1)
-		errnoCheck("send()");
+		throw errorErrno();
 }
-
-
 
 void Server::fetchTheFirst(std::string command, std::string buffer, User *newUser)
 {
@@ -94,18 +76,11 @@ void Server::fetchTheFirst(std::string command, std::string buffer, User *newUse
 }
 
 /* search for the commands: PASS NICK USER; upper or lower case*/
-int Server::searchForCredentials(std::string buffer, User *newUser, int o)
+int Server::searchForCredentials(std::string buffer, User *newUser)
 {
 
 	static int 		mult = 1;
 	int				i;
-	if (o == 5)
-	{
-		mult = 1;
-		return (mult);
-		/* code */
-	}
-	
 
 	if (buffer.find("pass") != std::string::npos 
 	|| buffer.find("PASS") != std::string::npos)

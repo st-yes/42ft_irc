@@ -13,6 +13,9 @@ SRC= main.cpp\
 	User.cpp\
 	helperFunctions.cpp\
 	handleCommands.cpp\
+	Exceptions.cpp\
+	validationUtils.cpp\
+	authentification.cpp\
 
 NAME= ircserv
 

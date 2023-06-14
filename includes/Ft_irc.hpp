@@ -1,4 +1,8 @@
-#pragma once
+#pragma once 
+
+#include "Server.hpp"
+#include "User.hpp"
+#include <iostream>
 
 # define MAX_PORT 65535
 # define MIN_PORT 1
@@ -10,9 +14,6 @@
 # define ERR_PASSWDMISMATCH "464"
 # define ERR_NICKNAMEINUSE "433"
 # define ERR_NICKCOLLISION "436"
-
-#include <iostream>
-#include "User.hpp"
 
 enum	errors
 {
@@ -28,7 +29,6 @@ enum	commands
 	NICK,
 	USER
 };
-
 
 void	errorMsg(int error);
 bool	validPort(std::string s);

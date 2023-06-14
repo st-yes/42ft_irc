@@ -14,9 +14,9 @@
 # include <poll.h>
 # include <fcntl.h>
 # include "User.hpp"
-# include "helperFunctions.hpp"
 
-class   Server{
+class   Server
+{
     protected :
         std::map<int, User*>    users;
         std::vector<pollfd>     pollers;
@@ -27,7 +27,7 @@ class   Server{
         int                     servSocketFd;
     public :
         Server();
-        Server(int s, std::string p);
+        Server(int ac, char **av);
         Server(Server const &p);
         ~Server();
         Server  const &operator=(Server const &p);
@@ -42,23 +42,36 @@ class   Server{
         User    *createUser();
         void	sendInstructions(int clientFd);
         void	sendWelcome(int	clientFd, User *user);
-        void	sendNumericReply(const std::string& prefix, const std::string& replyCode,
- std::string& nick, const std::string& message, int clientFd);
-        void	sendNumericReplyCommand(const std::string& prefix, const std::string& replyCode,
- std::string nick,const std::string& command, const std::string& message, int clientFd);
-
-        int     searchForCredentials(std::string buffer, User *newUser, int o);
+        int     searchForCredentials(std::string buffer, User *newUser);
         void    fetchTheFirst(std::string command, std::string buffer, User *newUser);
         void    sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params);
         bool	passCorrect(std::string passUser);
         bool	nickAlreadyInUse(std::string nick, int i);
+        bool	authenticated(int fdClient);
 
-    //add exeptions
-    class ProblemInFdServer : public std::exception
-    {
-        public:
-            virtual const char *what() const throw();
-    };
+        /*-------------------EXCEPTIONS------------------*/
+        
+
+        class errorNbArguments : public std::exception
+        {
+            public:
+                virtual const char *what() const throw();
+        };
+        class errorPort : public std::exception
+        {
+            public:
+                virtual const char *what() const throw();
+        };
+        class errorPass : public std::exception
+        {
+            public:
+                virtual const char *what() const throw();
+        };
+        class errorErrno : public std::exception
+        {
+            public:
+                virtual const char *what() const throw();
+        };
 };
 
 #endif
