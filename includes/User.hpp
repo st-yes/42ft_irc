@@ -3,11 +3,13 @@
 
 # include <iostream>
 # include <sstream>
+#include "Request.hpp"
 
 
 class User{
     protected :
     public :
+        int         primer;
         std::string userName;
         std::string userFullName;
         std::string userHostName;
@@ -20,6 +22,7 @@ class User{
         bool        passAuth;
         bool        userAuthentified;
         bool        chanOpPermission;
+        //Request     userReq;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);

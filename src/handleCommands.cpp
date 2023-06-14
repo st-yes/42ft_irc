@@ -30,16 +30,14 @@ void	Server::sendWelcome(int	clientFd, User *user)
 	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + user->getNick() + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
 	if (send(clientFd, msg.c_str(), msg.length(), 0) == -1)
 		throw errorErrno();
-    msg = ":" + user->getNick() + " has joined the server!\r\n"; //message send to all those connected to socket ??
+    msg = user->userNick + " has joined the server!\r\n"; //message send to all those connected to socket ??
     for (int i = 0; i < this->pollers.size(); i++)
 	{
         if (this->pollers[i].fd == this->servSocketFd)
             continue;
 		if (authenticated(this->pollers[i].fd))
-		{
 			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
 				throw errorErrno();
-		}
     }
 }
 
@@ -79,7 +77,7 @@ void Server::fetchTheFirst(std::string command, std::string buffer, User *newUse
 int Server::searchForCredentials(std::string buffer, User *newUser)
 {
 
-	static int 		mult = 1;
+	int 		mult = 1;
 	int				i;
 
 	if (buffer.find("pass") != std::string::npos 
@@ -100,5 +98,6 @@ int Server::searchForCredentials(std::string buffer, User *newUser)
 		fetchTheFirst("user", buffer, newUser);
 		mult *= 7;
 	}
+	std::cout << "Here it comes!" << mult << std::endl;
 	return (mult);
 }

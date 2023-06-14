@@ -20,7 +20,6 @@ Server::Server(int ac, char **av)
     this->portNumber = std::atoi(portNum.c_str());
     this->serverName = "Banana kat3oum";
 }
-
 Server::Server(Server const &p)
 {
     this->numberOfCli = p.numberOfCli;
@@ -28,7 +27,6 @@ Server::Server(Server const &p)
     this->portNumber = p.portNumber;
     this->users  = p.users;
 }
-
 Server::~Server()
 {
     std::cout << "The server is down! :c" << std::endl;
@@ -68,7 +66,6 @@ void    Server::createConnection()
     serverPoll.fd = this->servSocketFd;
     serverPoll.events = POLLIN;
     this->pollers.push_back(serverPoll);
-    this->numberOfCli++;
     while (true)
         Server::Authentication();
 }
@@ -110,8 +107,10 @@ void    Server::nConnection()
     pollCli.fd = clientSocket;
     pollCli.events = POLLIN;
     this->pollers.push_back(pollCli);
+    this->numberOfCli++;
     newU = new User;
     newU->userAuthentified = false;
+    newU->primer = 1;
     this->users.insert(std::make_pair(clientSocket, newU));
     Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
@@ -143,10 +142,8 @@ void    Server::oConnection(int i)
 
 void    Server::fConnection(int i, char *buffer, User *UserX)
 {
-    int primeNumber;
-
-    primeNumber = searchForCredentials(buffer, UserX);
-    if (!UserX->userAuthentified && (primeNumber == 5 || primeNumber == 7 || primeNumber == 35)){
+    UserX->primer *= searchForCredentials(buffer, UserX);
+    if (!UserX->userAuthentified && (UserX->primer == 5 || UserX->primer == 7 || UserX->primer == 35)){
         std::string* params = new std::string[3];
         params[0] = UserX->userNick;
         params[1] = ":Password should be given first!";
@@ -154,12 +151,13 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
         this->sendReply(this->pollers[i].fd, "localhost", ERR_PASSWDMISMATCH, params);
         delete[] params;
     }
-    else if (!UserX->userAuthentified && primeNumber == 105)
+    else if (!UserX->userAuthentified && UserX->primer == 105)
     {
         std::cout << "pass =" << UserX->userPass << std::endl;
         std::cout << "nick =" << UserX->userNick << std::endl;
         std::cout << "user =" << UserX->userCommand << std::endl;
         if (!this->passCorrect(UserX->userPass)){
+            std::cout << "There you go homie  :" << UserX->userPass << std::endl;
             std::string* params = new std::string[3];
             params[0] = UserX->userNick;
             params[1] = ":Incorrect Password";
@@ -181,20 +179,19 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
         {
             UserX->userAuthentified = true;
             this->sendWelcome(this->pollers[i].fd, UserX);
-            
         }
     }
     return;
 }
 
-void    Server::regularConnection(char *buffer, int i)
+void    Server::regularConnection(std::string lebuffer, int i)
 {
-
-    for(int i = 0; i < this->pollers.size(); i++)
+    std::cout << "what is happening in here! " << lebuffer << std::endl;
+    for(int k = 0; k < this->pollers.size(); k++)
     {
-        if (this->pollers[i].fd == this->servSocketFd)
+        if (this->pollers[k].fd == this->servSocketFd || i == k)
             continue;
-        if (send(this->pollers[i].fd, buffer, sizeof(buffer), 0) == -1)
+        if (send(this->pollers[i].fd, lebuffer.c_str(), lebuffer.length(), 0) == -1)
             throw errorErrno();
     }
 }

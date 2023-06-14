@@ -2,6 +2,7 @@
 
 #include "Server.hpp"
 #include "User.hpp"
+#include "Request.hpp"
 #include <iostream>
 
 # define MAX_PORT 65535

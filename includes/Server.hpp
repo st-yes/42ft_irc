@@ -33,7 +33,7 @@ class   Server
         Server  const &operator=(Server const &p);
     public :
         void    fConnection(int i, char *buffer, User *New);
-        void    regularConnection(char *buffer, int i);
+        void    regularConnection(std::string buffer, int i);
         void    createConnection();
         void    Authentication();
         void    nConnection();
