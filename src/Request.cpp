@@ -15,7 +15,7 @@
 //     *this = s;
 // }
 // Request::~Request(){
-//     std::cout << "No more Requests to treat!" << std::endl;
+//     //std::cout << "No more Requests to treat!" << std::endl;
 // }
 // Request const &Request::operator=(Request const &s){
 //     return *this;

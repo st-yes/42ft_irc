@@ -2,7 +2,7 @@
 
     User::User(){}
     User::User(std::string name, std::string nick, std::string fullName, std::string hostName) : userName(name), userNick(nick), userFullName(fullName), userHostName(hostName){
-        std::cout << this->userNick + " has been created!" << std::endl;
+        //std::cout << this->userNick + " has been created!" << std::endl;
     }
     User::User(User const &s){
         this->userNick = s.userNick;
@@ -18,7 +18,7 @@
 
     }
     User::~User(){
-        std::cout << this->userNick + " has been deleted!" << std::endl;
+        //std::cout << this->userNick + " has been deleted!" << std::endl;
     }
     User const &User::operator=(User const &s){
         *this = s;

@@ -2,7 +2,7 @@
 
 Server::Server(){}
 // Server::Server(int s, std::string p) : serverName("Banana kat3oum"), numberOfCli(0), passWord(p), portNumber(s){
-//     std::cout <<  serverName + " is up! :)" << std::endl;
+//     //std::cout <<  serverName + " is up! :)" << std::endl;
 // }
 Server::Server(int ac, char **av)
 {
@@ -29,7 +29,7 @@ Server::Server(Server const &p)
 }
 Server::~Server()
 {
-    std::cout << "The server is down! :c" << std::endl;
+    //std::cout << "The server is down! :c" << std::endl;
 }
 Server  const &Server::operator=(Server const &p){
     *this = p;
@@ -60,7 +60,7 @@ void    Server::createConnection()
         throw errorErrno();
     if (bind(this->servSocketFd, socketAddrBind, sizeof(servSocketAddr)) == -1)
         throw errorErrno();
-    std::cout << "The server is now available on the port : " << this->portNumber << std::endl;
+    //std::cout << "The server is now available on the port : " << this->portNumber << std::endl;
     if (listen(this->servSocketFd, BACKLOG) == -1)
         throw errorErrno();
     serverPoll.fd = this->servSocketFd;
@@ -112,7 +112,7 @@ void    Server::nConnection()
     newU->userAuthentified = false;
     newU->primer = 1;
     this->users.insert(std::make_pair(clientSocket, newU));
-    Server::sendInstructions(clientSocket);
+    //Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }
 
@@ -123,17 +123,20 @@ void    Server::oConnection(int i)
     
     std::memset(buffer, 0, sizeof(buffer));
     receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
-    if (receivedBytes == -1)
-        throw errorErrno();
-    else if (receivedBytes == 0)
+    if (receivedBytes == -1 || receivedBytes == 0)
+    //     throw errorErrno();
+    // else if (receivedBytes == 0)
     {
         lostConnection(this->pollers[i].fd, i);
         return;
     }
     else
     {
-        if (!this->users.find(this->pollers[i].fd)->second->userAuthentified)
-            Server::fConnection(i, buffer, this->users.find(this->pollers[i].fd)->second); //first connection?
+        if (!this->users.find(this->pollers[i].fd)->second->userAuthentified){
+            if (buffer[0] == '\n')
+                Server::sendInstructions(this->pollers[i].fd);
+            Server::fConnection(i, buffer, this->users.find(this->pollers[i].fd)->second);
+        } //first connection?
         else
             Server::regularConnection(buffer, i);
     }
@@ -153,11 +156,11 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
     }
     else if (!UserX->userAuthentified && UserX->primer == 105)
     {
-        std::cout << "pass =" << UserX->userPass << std::endl;
-        std::cout << "nick =" << UserX->userNick << std::endl;
-        std::cout << "user =" << UserX->userCommand << std::endl;
+        //std::cout << "pass =" << UserX->userPass << std::endl;
+        //std::cout << "nick =" << UserX->userNick << std::endl;
+        //std::cout << "user =" << UserX->userCommand << std::endl;
         if (!this->passCorrect(UserX->userPass)){
-            std::cout << "There you go homie  :" << UserX->userPass << std::endl;
+            //std::cout << "There you go homie  :" << UserX->userPass << std::endl;
             std::string* params = new std::string[3];
             params[0] = UserX->userNick;
             params[1] = ":Incorrect Password";
@@ -186,13 +189,30 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
 
 void    Server::regularConnection(std::string lebuffer, int i)
 {
-    std::cout << "what is happening in here! " << lebuffer << std::endl;
-    for(int k = 0; k < this->pollers.size(); k++)
+    //std::cout << "what is happening in here! " << lebuffer << std::endl;
+    // for(int k = 0; k < this->pollers.size(); k++)
+    // {
+    //     if (this->pollers[k].fd == this->servSocketFd || i == k)
+    //         continue;
+    //     if (this->users.find(this->pollers[k].fd)->second->userAuthentified){
+    //         if (send(this->pollers[k].fd, lebuffer.c_str(), lebuffer.length(), 0) == -1)
+    //             throw errorErrno();}
+    //     else
+    //         continue; 
+    // }
+    this->sendEveryOne(lebuffer, i);
+}
+
+void    Server::sendEveryOne(std::string buffer, int i){
+        for(int k = 0; k < this->pollers.size(); k++)
     {
         if (this->pollers[k].fd == this->servSocketFd || i == k)
             continue;
-        if (send(this->pollers[i].fd, lebuffer.c_str(), lebuffer.length(), 0) == -1)
-            throw errorErrno();
+        if (this->users.find(this->pollers[k].fd)->second->userAuthentified){
+            if (send(this->pollers[k].fd, buffer.c_str(), buffer.length(), 0) == -1)
+                throw errorErrno();}
+        else
+            continue; 
     }
 }
 
@@ -211,14 +231,15 @@ void    Server::lostConnection(int fd, int i)
     std::string                    str = "|You have been disconnected from the server|\r\n";
     std::string                    strII = it->second->getNick() + " Has left the server!\r\n";
 
-    std::cout << it->second->getNick() << " has been disconnected!" << std::endl;
-    if (send(fd, str.c_str(), str.length(), 0) == -1)
-        throw errorErrno();
+    //std::cout << it->second->getNick() << " has been disconnected!" << std::endl;
+    //if (send(fd, str.c_str(), str.length(), 0) == -1)
+     //   throw errorErrno();
     this->pollers.erase(this->pollers.begin() + i);
+    std::cout << it->second->userNick + " " << fd << std::endl;
     this->users.erase(it);
-    for (int k = 1; k < this->pollers.size(); k++){
-        if (send(this->pollers[k].fd, strII.c_str(), strII.length(), 0) == -1)
-            throw errorErrno();
-    }
+    //for (int k = 1; k < this->pollers.size(); k++){
+    //    if (send(this->pollers[k].fd, strII.c_str(), strII.length(), 0) == -1)
+    //        throw errorErrno();
+    //}
     close(fd);
 }

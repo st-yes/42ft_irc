@@ -32,6 +32,7 @@ class   Server
         ~Server();
         Server  const &operator=(Server const &p);
     public :
+        void    sendEveryOne(std::string buffer, int i);
         void    fConnection(int i, char *buffer, User *New);
         void    regularConnection(std::string buffer, int i);
         void    createConnection();
