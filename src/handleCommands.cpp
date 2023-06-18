@@ -4,7 +4,7 @@
 * template try out of server reply 
 * :prefix numeric code param1 param2 ... + \r\n 
 --*/
-void Server::sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params)
+void Server::sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params, int k)
 {
 	std::string	reply;
 	int			i;
@@ -20,6 +20,7 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 	reply += "\r\n";
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
 		throw errorErrno();
+	this->lostConnection(clientFd, k);
 }
 
 /* connection established */

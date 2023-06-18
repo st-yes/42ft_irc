@@ -11,6 +11,7 @@ INC= -I ./includes/
 SRC= main.cpp\
 	Server.cpp\
 	User.cpp\
+	Channel.cpp\
 	helperFunctions.cpp\
 	handleCommands.cpp\
 	Exceptions.cpp\

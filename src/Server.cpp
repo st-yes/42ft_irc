@@ -6,7 +6,6 @@ Server::Server(){}
 // }
 Server::Server(int ac, char **av)
 {
- 
     if (ac != 3)
         throw errorNbArguments();
     std::string portNum(av[1]);
@@ -19,6 +18,34 @@ Server::Server(int ac, char **av)
     this->passWord = pass;
     this->portNumber = std::atoi(portNum.c_str());
     this->serverName = "Banana kat3oum";
+    Channel *chanDefault = NULL;
+    for (int i = 0; i < 3; i++){
+        switch(i){
+            case 0 : {
+                chanDefault = new Channel("#Lobby!", "This aint no Therapy but go ahead and talk your shit away!"); 
+               // std::vector<Channel*>::iterator it = std::find(this->servChannels.begin(), this->servChannels.end(), chanDefault); 
+               // if (it != this->servChannels.end())
+               //     chanDefault->channelIndex = it - this->servChannels.begin();
+            break;
+            }
+            case 1 : { // Case 1 and 2 will be deleted as soon as the testing is done! Default one to stay is case 0;
+                chanDefault = new Channel("#9endahar!", "Some place far far away!");
+              //  std::vector<Channel*>::iterator it = std::find(this->servChannels.begin(), this->servChannels.end(), chanDefault1);
+              //  if(it != this->servChannels.end())
+               //     chanDefault1->channelIndex = it - this->servChannels.begin();
+            break;
+            }
+            case 2 : {
+                chanDefault = new Channel("#Brkouksh", "Where Skafandri lives! I dont really know im out of weird topics!");
+              //  std::vector<Channel*>::iterator it = std::find(this->servChannels.begin(), this->servChannels.end(), chanDefault2);
+             //   if(it != this->servChannels.end())
+              //      chanDefault2->channelIndex = it - this->servChannels.begin();
+            break;
+            }
+        }
+        this->servChannels.push_back(chanDefault);
+    }
+    
 }
 Server::Server(Server const &p)
 {
@@ -123,6 +150,7 @@ void    Server::oConnection(int i)
     
     std::memset(buffer, 0, sizeof(buffer));
     receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
+   // std::cout << receivedBytes << "++++" << buffer << std::endl;
     if (receivedBytes == -1 || receivedBytes == 0)
     //     throw errorErrno();
     // else if (receivedBytes == 0)
@@ -151,8 +179,9 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
         params[0] = UserX->userNick;
         params[1] = ":Password should be given first!";
         params[2] = "";
-        this->sendReply(this->pollers[i].fd, "localhost", ERR_PASSWDMISMATCH, params);
+        this->sendReply(this->pollers[i].fd, "localhost", ERR_PASSWDMISMATCH, params, i);
         delete[] params;
+        this->lostConnection(this->pollers[i].fd, i);
     }
     else if (!UserX->userAuthentified && UserX->primer == 105)
     {
@@ -160,13 +189,14 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
         //std::cout << "nick =" << UserX->userNick << std::endl;
         //std::cout << "user =" << UserX->userCommand << std::endl;
         if (!this->passCorrect(UserX->userPass)){
-            //std::cout << "There you go homie  :" << UserX->userPass << std::endl;
+            std::cout << UserX->userPass << std::endl;
             std::string* params = new std::string[3];
             params[0] = UserX->userNick;
             params[1] = ":Incorrect Password";
             params[2] = "";
-            this->sendReply(this->pollers[i].fd, "localhost", ERR_PASSWDMISMATCH, params);
+            this->sendReply(this->pollers[i].fd, "localhost", ERR_PASSWDMISMATCH, params, i);
             delete[] params;
+            this->lostConnection(this->pollers[i].fd, i);
         }
         else if (this->nickAlreadyInUse(UserX->userNick, i))
         {
@@ -175,13 +205,15 @@ void    Server::fConnection(int i, char *buffer, User *UserX)
 			params[1] = UserX->userNick;
 			params[2] = ":Nickname is already in use";
 			params[3] = "";
-			this->sendReply(this->pollers[i].fd,"localhost", ERR_NICKNAMEINUSE, params);
+			this->sendReply(this->pollers[i].fd,"localhost", ERR_NICKNAMEINUSE, params, i);
 			delete[] params;
+            this->lostConnection(this->pollers[i].fd, i);
 		}
         else
         {
             UserX->userAuthentified = true;
             this->sendWelcome(this->pollers[i].fd, UserX);
+            this->defaultChannelsAdd(this->pollers[i].fd, UserX);
         }
     }
     return;
@@ -242,4 +274,76 @@ void    Server::lostConnection(int fd, int i)
     //        throw errorErrno();
     //}
     close(fd);
+}
+
+void    Server::defaultChannelsAdd(int fd, User *user){
+    std::vector<Channel *>::iterator    it;
+    Channel                             *current;
+    int                                 index;
+    int                                 index1 = -1;
+    int                                 index2 = -1 ;
+    for (index = 0; index != this->servChannels.size(); index++){
+        if (this->servChannels[index]->channelName == "#Lobby!")
+            break;
+        else if (this->servChannels[index]->channelName == "#9andahar!")
+            index1 = index;
+        else if (this->servChannels[index]->channelName == "#Brkouksh!")
+            index2 = index;
+    }
+    if (index != servChannels.size()){
+        this->servChannels[index]->channelMembers.push_back(user);
+        user->currentChannel = this->servChannels[index];
+       // if (this->servChannels[index]->channelIndex != index)
+       //     this->servChannels[index]->channelIndex = index;
+        current = this->servChannels[index];
+    }
+    else{
+        if (index1 != -1){
+            this->servChannels[index1]->channelMembers.push_back(user);
+            user->currentChannel = this->servChannels[index1];
+           // if (this->servChannels[index1]->channelIndex != index1)
+           //     this->servChannels[index1]->channelIndex = index1;
+            current = this->servChannels[index];
+        }
+        else if (index2 != -1){
+            this->servChannels[index2]->channelMembers.push_back(user);
+            user->currentChannel = this->servChannels[index2];
+       //     if (this->servChannels[index2]->channelIndex != index2)
+       //         this->servChannels[index2]->channelIndex = index2;
+            current = this->servChannels[index];
+        }
+        else // add error!
+            return;
+    }
+    this->sendWelcome(fd, user, current);
+    return ;
+}
+
+void    Server::sendWelcome(int clientFd, User *user, Channel *current){
+    std::string msg;
+    std::string msg1;
+
+    msg = ": You have joined the following channel :" + current->channelName + " \nThe channel Topic is : " + current->channelTopic + "\r\n";;
+	if (send(clientFd, msg.c_str(), msg.length(), 0) == -1)
+		throw errorErrno();
+    msg1 = "The existing Channels are : \n";
+    for (int i = 0; i != this->servChannels.size(); i++){
+        msg1 += "- " + this->servChannels[i]->channelName;
+        if (this->servChannels[i]->channelName == current->channelName)
+            msg1 += " (You are here!) ";
+        msg1 += "\r\n";
+        if (clientFd == this->servSocketFd)
+        continue;
+    }
+    if (send(clientFd, msg1.c_str(), msg1.length(), 0) == -1)
+        throw errorErrno();
+    msg = user->userNick + " has joined the channel!\r\n";
+    for (int i = 0; i < this->pollers.size(); i++)
+	{
+        if (this->pollers[i].fd == this->servSocketFd || this->pollers[i].fd == clientFd)
+            continue;
+		if (authenticated(this->pollers[i].fd))
+			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
+				throw errorErrno();
+    }
 }

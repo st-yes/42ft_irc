@@ -3,12 +3,13 @@
 
 # include <iostream>
 # include <sstream>
-#include "Request.hpp"
+# include "Channel.hpp"
 
-
+class Channel;
 class User{
     protected :
     public :
+        int         sendFd;
         int         primer;
         std::string userName;
         std::string userFullName;
@@ -22,7 +23,7 @@ class User{
         bool        passAuth;
         bool        userAuthentified;
         bool        chanOpPermission;
-        //Request     userReq;
+        Channel     *currentChannel;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);
@@ -46,6 +47,5 @@ class User{
         std::string const getFullName();
         std::string const getUsrHostName();
 };
-
 
 #endif

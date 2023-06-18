@@ -14,12 +14,14 @@
 # include <poll.h>
 # include <fcntl.h>
 # include "User.hpp"
+# include "Channel.hpp"
 
 class   Server
 {
     protected :
         std::map<int, User*>    users;
         std::vector<pollfd>     pollers;
+        std::vector<Channel *>  servChannels;
         std::string             passWord;
         std::string             serverName;
         int                     portNumber;
@@ -43,12 +45,14 @@ class   Server
         User    *createUser();
         void	sendInstructions(int clientFd);
         void	sendWelcome(int	clientFd, User *user);
+        void    sendWelcome(int clientFd, User *user, Channel *current);
         int     searchForCredentials(std::string buffer, User *newUser);
         void    fetchTheFirst(std::string command, std::string buffer, User *newUser);
-        void    sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params);
+        void    sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params, int i);
         bool	passCorrect(std::string passUser);
         bool	nickAlreadyInUse(std::string nick, int i);
         bool	authenticated(int fdClient);
+        void    defaultChannelsAdd(int clientFd, User *user);
 
         /*-------------------EXCEPTIONS------------------*/
         
