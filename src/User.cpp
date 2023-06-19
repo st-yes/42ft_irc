@@ -5,17 +5,18 @@
         //std::cout << this->userNick + " has been created!" << std::endl;
     }
     User::User(User const &s){
+        this->sendFd = s.sendFd;
+        this->primer = s.primer;
         this->userNick = s.userNick;
         this->userName = s.userName;
         this->userHostName = s.userHostName;
         this->userFullName = s.userFullName;
         this->channelName = s.channelName;
-        this->chanOpPermission = s.chanOpPermission;
         this->serverName = s.serverName;
-        this->welcomeMessage = s.welcomeMessage;
-        this->passAuth = s.passAuth;
         this->userAuthentified = s.userAuthentified;
-
+        this->userPass = s.userPass;
+        this->currentChannel = s.currentChannel;
+        this->nextChannel = s.nextChannel;
     }
     User::~User(){
         //std::cout << this->userNick + " has been deleted!" << std::endl;

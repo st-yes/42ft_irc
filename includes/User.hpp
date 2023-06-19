@@ -17,20 +17,18 @@ class User{
         std::string userNick;
         std::string serverName;
         std::string channelName;
-        std::string userCommand;
         std::string userPass;
-        bool        welcomeMessage;
-        bool        passAuth;
+        std::string userCommand;
         bool        userAuthentified;
-        bool        chanOpPermission;
         Channel     *currentChannel;
+        Channel     *nextChannel;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);
         User(User const &s);
         ~User();
         User const  &operator=(User const & s);
-    /*-------------------Setters------------------*/
+    /*-----------------------------Setters------------------------------------*/
     public :
         void    setNick(std::string const s);
         void    setNick(std::string const s, int mode);
@@ -40,12 +38,14 @@ class User{
         void    setFullName(std::string const s, int mode);
         void    setUsrHostName(std::string const s);
         void    setUsrHostName(std::string const s, int mode);
-    /*-------------------Getters------------------*/
+    /*-----------------------------Getters------------------------------------*/
     public :
         std::string const getNick();
         std::string const getUsrName();
         std::string const getFullName();
         std::string const getUsrHostName();
+    /*-------------------------**Member-Functions----------------------------*/
+
 };
 
 #endif

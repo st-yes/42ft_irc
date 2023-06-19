@@ -293,6 +293,7 @@ void    Server::defaultChannelsAdd(int fd, User *user){
     if (index != servChannels.size()){
         this->servChannels[index]->channelMembers.push_back(user);
         user->currentChannel = this->servChannels[index];
+        user->nextChannel = this->servChannels[index];
        // if (this->servChannels[index]->channelIndex != index)
        //     this->servChannels[index]->channelIndex = index;
         current = this->servChannels[index];
@@ -301,6 +302,7 @@ void    Server::defaultChannelsAdd(int fd, User *user){
         if (index1 != -1){
             this->servChannels[index1]->channelMembers.push_back(user);
             user->currentChannel = this->servChannels[index1];
+            user->nextChannel = this->servChannels[index1];
            // if (this->servChannels[index1]->channelIndex != index1)
            //     this->servChannels[index1]->channelIndex = index1;
             current = this->servChannels[index];
@@ -308,6 +310,7 @@ void    Server::defaultChannelsAdd(int fd, User *user){
         else if (index2 != -1){
             this->servChannels[index2]->channelMembers.push_back(user);
             user->currentChannel = this->servChannels[index2];
+            user->nextChannel = this->servChannels[index2];
        //     if (this->servChannels[index2]->channelIndex != index2)
        //         this->servChannels[index2]->channelIndex = index2;
             current = this->servChannels[index];
