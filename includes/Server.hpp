@@ -69,7 +69,11 @@ class   Server
         void	handleCmdUser(std::string	*params, User *userX, int paramNumber);
         /*-- COMMANDS PART 2--*/
         void    handleCmdOper(std::string   *params, User *userX, int paramNumber);
-
+        
+        /*-- COMMANDS PART 3--*/
+        void    ParseJoin(std::string* str, User* Userx, int paramNumber);
+        void    JoinFunc(std::map<std::string, std::string>   tmp, int i);
+    
         /*-------------------EXCEPTIONS------------------*/
         
 
@@ -93,6 +97,7 @@ class   Server
             public:
                 virtual const char *what() const throw();
         };
+
 };
 
 #endif

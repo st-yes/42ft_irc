@@ -23,6 +23,8 @@ SRC= main.cpp\
 	commandsPart1.cpp\
 	ircGod.cpp\
 	globalCommands2.cpp\
+	JoinAndPart.cpp \
+
 
 NAME= ircserv
 

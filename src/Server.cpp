@@ -76,7 +76,7 @@ void    Server::createConnection()
     servSocketAddr.sin6_family = AF_INET6;
     servSocketAddr.sin6_port = htons(this->portNumber);
     socketAddrBind = reinterpret_cast<sockaddr*>(&servSocketAddr);
-    if (setsockopt(this->servSocketFd, SOL_SOCKET, SO_REUSEADDR, &fl, sizeof(int)) == -1)
+    if (setsockopt(this->servSocketFd, SOL_SOCKET, SO_REUSEPORT, &fl, sizeof(int)) == -1)
         throw errorErrno();
     if (fcntl(this->servSocketFd, F_SETFL, O_NONBLOCK) == -1)
         throw errorErrno();
@@ -133,6 +133,9 @@ void    Server::nConnection()
     newU = new User;
     newU->userAuthentified = false;
     newU->primer = 1;
+    newU->sendFd = clientSocket;
+    newU->currentChannel = NULL;
+    newU->nextChannel = NULL;
     this->users.insert(std::make_pair(clientSocket, newU));
     Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;

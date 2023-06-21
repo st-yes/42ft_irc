@@ -31,6 +31,9 @@ class   Channel{
         int findUserinChannel(int fd);
         // joinChannel(std::string name);
         // leaveChannel(std::string name);
+        
+        std::string GetThekey();
+
 
 };
 
