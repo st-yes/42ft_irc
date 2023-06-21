@@ -28,6 +28,7 @@ class   Channel{
         ~Channel();
         Channel const   &operator=(Channel const &s);
     public :
+        int findUserinChannel(int fd);
         // joinChannel(std::string name);
         // leaveChannel(std::string name);
 

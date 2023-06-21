@@ -29,7 +29,7 @@ void	Server::sendWelcome(int	clientFd, User *user)
 {
 	std::string	msg;
 
-	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + "styes" + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
+	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + user->userNick + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
 	if (send(clientFd, msg.c_str(), msg.length(), 0) == -1)
 		throw errorErrno();
     msg = user->userNick + " has joined the server!\r\n"; //message send to all those connected to socket ??

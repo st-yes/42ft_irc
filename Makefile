@@ -20,7 +20,9 @@ SRC= main.cpp\
 	parsingUtils.cpp\
 	debug.cpp\
 	globalCommands.cpp\
-	commandsPart1.cpp
+	commandsPart1.cpp\
+	ircGod.cpp\
+	globalCommands2.cpp\
 
 NAME= ircserv
 

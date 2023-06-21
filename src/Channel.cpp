@@ -24,3 +24,16 @@ Channel const &Channel::operator=(Channel const &s){
     *this = s;
     return *this;
 }
+int    Channel::findUserinChannel(int fd){
+    if(this->channelMembers.empty())
+    {
+        return -1;}
+    for(std::vector<User*>::iterator it = this->channelMembers.begin() ; it != this->channelMembers.end(); it++){
+
+        if (*it && (*it)->sendFd == fd){
+            std::cout << "found " << std::endl;
+            return (it - this->channelMembers.begin());
+        }
+    }
+    return -1;
+}

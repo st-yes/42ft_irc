@@ -15,6 +15,7 @@
 # include <fcntl.h>
 # include "User.hpp"
 # include "Channel.hpp"
+# include "ircGod.hpp"
 
 class   Server
 {
@@ -44,7 +45,6 @@ class   Server
         void    nConnection();
         void    oConnection(int i);
         void    lostConnection(int fd, int i);
-        User    *createUser();
         void	sendInstructions(int clientFd);
         void	sendWelcome(int	clientFd, User *user);
         void    sendWelcome(int clientFd, User *user, Channel *current);
@@ -67,6 +67,8 @@ class   Server
         void	handleCmdPass(std::string	*params, User *userX, int paramNumber);
         void	handleCmdNick(std::string	*params, User *userX, int paramNumber);
         void	handleCmdUser(std::string	*params, User *userX, int paramNumber);
+        /*-- COMMANDS PART 2--*/
+        void    handleCmdOper(std::string   *params, User *userX, int paramNumber);
 
         /*-------------------EXCEPTIONS------------------*/
         

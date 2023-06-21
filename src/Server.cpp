@@ -18,6 +18,9 @@ Server::Server(int ac, char **av)
     this->passWord = pass;
     this->portNumber = std::atoi(portNum.c_str());
     this->serverName = SERVERNAME;
+    this->gods.insert(std::make_pair("Skafandri","22221111"));
+    this->gods.insert(std::make_pair("Stoph", "k7el"));
+    this->gods.insert(std::make_pair("SoukSouk", ""));
     Channel *chanDefault = NULL;
     for (int i = 0; i < 3; i++){
         switch(i){
@@ -157,10 +160,13 @@ void    Server::oConnection(int i)
             // std::cout << "--------"<< std::endl;
         }
         if (!this->users.find(this->pollers[i].fd)->second->userAuthentified)
-            {
+        {
                 std::cout << "----- First connection -----" << std::endl;
                 Server::firstConnection(i, buffer, this->users.find(this->pollers[i].fd)->second); //first connection?
-            }
+               this->users.find(this->pollers[i].fd)->second->userAuthentified = true;
+               this->sendWelcome(this->pollers[i].fd, this->users.find(this->pollers[i].fd)->second);
+               this->defaultChannelsAdd(this->pollers[i].fd, this->users.find(this->pollers[i].fd)->second);
+        }
         else
            {
                 std::cout << "----- Regular connection -----" << std::endl;

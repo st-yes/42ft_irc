@@ -24,6 +24,7 @@
 # define ERR_NORULES	"434"
 # define  ERR_NONICKNAMEGIVEN "431"
 # define ERR_ERRONEUSNICKNAME	"432"
+# define RPL_YOUREOPER "381"
 
 class Channel;
 class User{

@@ -2,6 +2,8 @@
 
     User::User(){}
     User::User(std::string name, std::string nick, std::string fullName, std::string hostName) : userName(name), userNick(nick), userFullName(fullName), userHostName(hostName){
+        this->currentChannel = NULL;
+        this->nextChannel = NULL;
         //std::cout << this->userNick + " has been created!" << std::endl;
     }
     User::User(User const &s){

@@ -1,7 +1,7 @@
 #include "../includes/ircGod.hpp"
 
 ircGod::ircGod(){}
-ircGod::ircGod(User const &s, std::string name) : User(s), godName(name){
+ircGod::ircGod(User const *s, std::string name) : User(*s), godName(name){
     std::cout << "A god has been made! " << std::endl;
 }
 ircGod::ircGod(ircGod const &s) : User(s){

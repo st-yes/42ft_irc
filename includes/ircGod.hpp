@@ -5,14 +5,15 @@
 # include "Server.hpp"
 # include <map>
 
-
-class ircGod : private User{
+class Server;
+class ircGod : public User{
     protected :
         std::string godName;
+    public :
         Server      *servAccess;
     public :
         ircGod();
-        ircGod(User const &s, std::string name);
+        ircGod(User const *s, std::string name);
         ircGod(ircGod const &s);
         ~ircGod();
         ircGod const &operator=(ircGod const &s); 
