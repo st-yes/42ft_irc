@@ -9,14 +9,16 @@
 class User;
 class   Channel{
     protected :
-        std::string              channelKey;
-        std::vector<User*>       channelOps;
-        bool                     inviteFlag;
-        bool                     keyAuth;
     public :
+        std::vector<User*>       channelMembers;
+        std::vector<User*>       channelOps;
         std::string              channelTopic;
-        std::vector<User*>      channelMembers;
         std::string              channelName;
+        std::string              channelKey;
+        bool                     inviteMode;
+        bool                     limitMode;
+        bool                     keyMode;
+        size_t                   limit;
         //int                      channelIndex;
     public :
         Channel();

@@ -4,7 +4,7 @@ Channel::Channel(){}
 Channel::Channel(std::string s, std::string topic) : channelName(s), channelTopic(topic){
     std::cout << this->channelName + " has been created!" << std::endl;
 }
-Channel::Channel(std::string s, std::string topic, std::string pswd) : channelName(s), channelTopic(topic), keyAuth(true) ,channelKey(pswd){
+Channel::Channel(std::string s, std::string topic, std::string pswd) : channelName(s), channelTopic(topic), keyMode(true) ,channelKey(pswd){
     std::cout << this->channelName + " has been created!" << std::endl;
 }
 Channel::Channel(Channel const &s){

@@ -19,14 +19,15 @@
 class   Server
 {
     protected :
-        std::map<int, User*>    users;
-        std::vector<pollfd>     pollers;
-        std::vector<Channel *>  servChannels;
-        std::string             passWord;
-        std::string             serverName;
-        int                     portNumber;
-        int                     numberOfCli;
-        int                     servSocketFd;
+        std::map<int, User*>                users;
+        std::map<std::string, std::string>  gods;
+        std::vector<pollfd>                 pollers;
+        std::vector<Channel *>              servChannels;
+        std::string                         passWord;
+        std::string                         serverName;
+        int                                 portNumber;
+        int                                 numberOfCli;
+        int                                 servSocketFd;
     public :
         Server();
         Server(int ac, char **av);

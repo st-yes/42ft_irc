@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <sstream>
+# include <map>
 # include "Channel.hpp"
 
 # define MAX_PORT 65535
@@ -27,20 +28,22 @@
 class Channel;
 class User{
     protected :
+        std::map<Channel *, std::vector<std::string> > chanPriv;
+        std::vector<std::string>                      Priv;
     public :
         int         sendFd;
         int         primer;
         std::string userName;
-        std::string userFullName;
-        std::string userHostName;
         std::string userNick;
+        std::string userHostName;
+        std::string userFullName;
         std::string serverName;
         std::string channelName;
         std::string userPass;
         std::string userCommand;
-        bool        userAuthentified;
         Channel     *currentChannel;
         Channel     *nextChannel;
+        bool        userAuthentified;
 
         std::vector<std::string>    commandFull;
     public :
