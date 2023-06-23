@@ -37,3 +37,18 @@ int    Channel::findUserinChannel(int fd){
     }
     return -1;
 }
+void    Channel::setTheKey(std::string s){
+    if (this->keyMode)
+    {
+        this->channelKey = s;
+        return;
+    }
+        return;
+}
+void    Channel::setTheLimit(size_t lim){
+    if (this->limitMode){
+        this->limit = lim;
+        return;
+    }
+    return;
+}

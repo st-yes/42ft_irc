@@ -15,3 +15,9 @@ ircGod const &ircGod::operator=(ircGod const &s){
     *this = s;
     return *this;
 }
+Server *ircGod::getGodPower(){
+    return (this->servAccess);
+}
+void    ircGod::setGodPower(Server *s){
+        this->servAccess = s;
+}

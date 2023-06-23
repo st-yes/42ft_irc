@@ -36,19 +36,18 @@ class   Server
         ~Server();
         Server  const &operator=(Server const &p);
     public :
-        void    sendEveryOne(std::string buffer, int i);
+        void    sendEveryOne(std::string buffer, User *currentUser);
         void    fConnection(int i, char *buffer, User *New);
         //void    regularConnection(std::string buffer, int i);
-        void    regularConnection(std::string buffer, int i, User *UserX);
+        void    regularConnection(std::string buffer, User *UserX);
         void    createConnection();
         void    Authentication();
         void    nConnection();
         void    oConnection(int i);
-        void    lostConnection(int fd, int i);
+        void    lostConnection(User *user);
         void	sendInstructions(int clientFd);
-        void	sendWelcome(int	clientFd, User *user);
-        void    sendWelcome(int clientFd, User *user, Channel *current);
-        int     findClientFd(User *userX);
+        void	sendWelcome(User *user);
+        void    sendWelcome(User *user, Channel *current);
         void    handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumber);
 
         //int     searchForCredentials(std::string buffer, User *newUser);
@@ -59,7 +58,7 @@ class   Server
         
         bool	nickAlreadyInUse(std::string nick);
         bool	authenticated(int fdClient);
-        void    defaultChannelsAdd(int clientFd, User *user);
+        void    defaultChannelsAdd(User *user);
 
         void    firstConnection(int i, char *buffer, User *UserX);
         /*-- COMMANDS PART 1--*/
@@ -69,11 +68,24 @@ class   Server
         void	handleCmdUser(std::string	*params, User *userX, int paramNumber);
         /*-- COMMANDS PART 2--*/
         void    handleCmdOper(std::string   *params, User *userX, int paramNumber);
+        void    handleCmdMode(std::string   *params, User *userX, int paramNumber);
+        void    handleCmdModeOpt(std::string *params, User *userX, Channel *chan);
+        void    handleCmdModeOpt(Channel *chan, User *userX, std::map<char,std::string> opt, int mode);
+        void    handleCmdModeOptI(User *userX, Channel *chan, int mode);
+        void    handleCmdModeOptT(User *userX, Channel *chan, int mode);
+        void    handleCmdModeOptO(User *userX, std::string s, Channel *chan, int mode);
+        void    handleCmdModeOptK(User *userX, std::string s, Channel *chan, int mode);
+        void    handleCmdModeOptL(User *userX, std::string s, Channel *chan, int mode);
+        Channel *channelFinder(std::string s);
         
         /*-- COMMANDS PART 3--*/
         void    ParseJoin(std::string* str, User* Userx, int paramNumber);
         void    JoinFunc(std::map<std::string, std::string>   tmp, int i);
     
+        /*-- HELPER-FUNCTIONS --*/
+            int     findUserinChan(int fd, std::vector<User *> x);
+            User    *findUserinServ(std::string name);
+            void    deleteFromPoll(int fd);
         /*-------------------EXCEPTIONS------------------*/
         
 

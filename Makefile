@@ -22,7 +22,7 @@ SRC= main.cpp\
 	globalCommands.cpp\
 	commandsPart1.cpp\
 	ircGod.cpp\
-	globalCommands2.cpp\
+	commandsPart2.cpp\
 	JoinAndPart.cpp \
 
 

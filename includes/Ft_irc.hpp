@@ -3,6 +3,7 @@
 #include "Server.hpp"
 #include "User.hpp"
 #include "Channel.hpp"
+#include "ircGod.hpp"
 #include <iostream>
 
 # define MAX_PORT 65535
@@ -39,6 +40,9 @@ bool    parse_args(char **s);
 void	parsePassNick(User *newUser, std::string buffer, int start, int comm);
 bool	parseUser(User *newUser, std::string buffer, int start);
 void	getCredentials(User *newUser, std::string buffer, int start, int comm);
+bool    checkAttr(std::string s);
+int     checkStringToken(std::string *params, int paramNumber);
+size_t	checkNums(std::string s);
 
 /*--- PARSING UTILS ---*/
 int				countParams(std::string	command);

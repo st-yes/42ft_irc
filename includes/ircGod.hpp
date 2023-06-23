@@ -8,15 +8,18 @@
 class Server;
 class ircGod : public User{
     protected :
-        std::string godName;
-    public :
         Server      *servAccess;
+    public :
+        std::string godName;
     public :
         ircGod();
         ircGod(User const *s, std::string name);
         ircGod(ircGod const &s);
         ~ircGod();
         ircGod const &operator=(ircGod const &s); 
+    public :
+        Server *getGodPower();
+        void    setGodPower(Server *s);
 };
 
 

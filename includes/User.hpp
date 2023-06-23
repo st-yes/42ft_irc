@@ -15,47 +15,49 @@
 # define SERVERNAME "BANANA"
 
 /*--- numeric reply --*/
-# define RPL_WELCOME "001"
-# define ERR_NEEDMOREPARAMS "461"
-# define ERR_PASSWDMISMATCH "464"
-# define ERR_NICKNAMEINUSE "433"
-# define ERR_NICKCOLLISION "436"
-# define  ERR_ALREADYREGISTERED "462"
-# define ERR_NORULES	"434"
-# define  ERR_NONICKNAMEGIVEN "431"
+# define RPL_TOPIC              "332"
+# define RPL_WELCOME            "001"
+# define RPL_NOTOPIC            "331"
+# define RPL_INVITING           "341"
+# define RPL_YOUREOPER          "381"
+# define RPL_CHANNELMODES       "324"
+# define RPL_ENDOFBANLIST       "368"
+# define ERR_NORULES	        "434"
+# define ERR_NOPRIVILEGES       "481"
+# define ERR_NICKNAMEINUSE      "433"
+# define ERR_NICKCOLLISION      "436"
+# define ERR_NEEDMOREPARAMS     "461"
+# define ERR_INVITEONLYCHAN     "473"
+# define ERR_PASSWDMISMATCH     "464"
+# define ERR_NONICKNAMEGIVEN    "431"
+# define ERR_USERNOTINCHANNEL   "441"
+# define ERR_CHANOPPRIVNEEDED   "482"
 # define ERR_ERRONEUSNICKNAME	"432"
-# define RPL_YOUREOPER "381"
+# define ERR_ALREADYREGISTERED  "462"
 
 class Channel;
 class User{
     protected :
-        std::map<Channel *, std::vector<std::string> > chanPriv;
-        std::vector<std::string>                      Priv;
-    public :
-        int         sendFd;
-        int         primer;
         std::string userName;
         std::string userNick;
         std::string userHostName;
         std::string userFullName;
-        std::string serverName;
-        std::string channelName;
         std::string userPass;
-        std::string userCommand;
-        Channel     *currentChannel;
-        Channel     *nextChannel;
-        bool        userAuthentified;
-
+    public :
+        bool                        userAuthentified;
+        int                         sendFd;
+        int                         primer;
+        Channel                     *currentChannel;
+        Channel                     *nextChannel;
+        std::string                 serverName;
         std::vector<std::string>    commandFull;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);
         User(User const &s);
-        ~User();
+        virtual ~User();
         User const  &operator=(User const & s);
         void    getCommands(std::string	buffer);
-    
-    
     /*-----------------------------Setters------------------------------------*/
     public :
         void    setNick(std::string const s);

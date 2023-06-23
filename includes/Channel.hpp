@@ -9,17 +9,17 @@
 class User;
 class   Channel{
     protected :
+        size_t                          limit;
+        std::string                     channelKey;
     public :
-        std::vector<User*>       channelMembers;
-        std::vector<User*>       channelOps;
-        std::string              channelTopic;
-        std::string              channelName;
-        std::string              channelKey;
-        bool                     inviteMode;
-        bool                     limitMode;
-        bool                     keyMode;
-        size_t                   limit;
-        //int                      channelIndex;
+        std::vector<User *>             channelOps;
+        std::vector<User*>              channelMembers;
+        std::string                     channelName;
+        std::string                     channelTopic;
+        bool                            inviteMode;
+        bool                            topicProtectMode;
+        bool                            limitMode;
+        bool                            keyMode;
     public :
         Channel();
         Channel(std::string s, std::string topic);
@@ -29,10 +29,9 @@ class   Channel{
         Channel const   &operator=(Channel const &s);
     public :
         int findUserinChannel(int fd);
-        // joinChannel(std::string name);
-        // leaveChannel(std::string name);
-        
         std::string GetThekey();
+        void        setTheKey(std::string s);
+        void        setTheLimit(size_t t);
 
 
 };

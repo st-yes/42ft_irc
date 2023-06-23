@@ -20,26 +20,26 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 	reply += "\r\n";
 	std::cout << "[client -> server]" << reply << std::flush;
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
-		throw errorErrno();
+		throw errorErrno(); // recheck for error
 	//this->lostConnection(clientFd, k);
 }
 
 /* connection established */
-void	Server::sendWelcome(int	clientFd, User *user)
+void	Server::sendWelcome(User *user)
 {
 	std::string	msg;
 
-	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + user->userNick + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
-	if (send(clientFd, msg.c_str(), msg.length(), 0) == -1)
-		throw errorErrno();
-    msg = user->userNick + " has joined the server!\r\n"; //message send to all those connected to socket ??
+	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + user->getNick() + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
+	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
+		throw errorErrno(); // check for error
+    msg = user->getNick() + " has joined the server!\r\n"; //message send to all those connected to socket ??
     for (int i = 0; i < this->pollers.size(); i++)
 	{
-        if (this->pollers[i].fd == this->servSocketFd || this->pollers[i].fd == clientFd)
+        if (this->pollers[i].fd == this->servSocketFd || this->pollers[i].fd == user->sendFd)
             continue;
 		if (authenticated(this->pollers[i].fd))
 			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
-				throw errorErrno();
+				throw errorErrno(); // Check for error
     }
 }
 

@@ -13,7 +13,6 @@
         this->userName = s.userName;
         this->userHostName = s.userHostName;
         this->userFullName = s.userFullName;
-        this->channelName = s.channelName;
         this->serverName = s.serverName;
         this->userAuthentified = s.userAuthentified;
         this->userPass = s.userPass;
