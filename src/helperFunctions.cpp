@@ -88,7 +88,7 @@ size_t	checkNums(std::string s){
 	if(!s.length())
 		return false;
 	for (int i = 0; i < s.length(); i++){
-		if (s.c_str()[i] < '1' && s.c_str()[i] > '9')
+		if (s.c_str()[i] < '1' || s.c_str()[i] > '9')
 			return false;
 	}
 	return true;
