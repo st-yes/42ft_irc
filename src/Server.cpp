@@ -185,10 +185,13 @@ void    Server::regularConnection(std::string buffer, User *UserX)
 			this->handleOtherCmds(UserX, cmdParams, paramNumber - 1);
 		}
 	}
-    this->sendEveryOne(buffer, UserX);
+    for(int i = 0; i < this->servChannels.size(); i++)
+        std::cout << this->servChannels[i]->channelName << std::endl;
+    //this->sendEveryOne(buffer, UserX);
 }
 
 void    Server::sendEveryOne(std::string buffer, User *currentUser){
+    std::cout << "There you go ! : " << buffer << std::endl;
         for(int k = 0; k < this->pollers.size(); k++)
     {
         if (this->pollers[k].fd == this->servSocketFd || this->pollers[k].fd == currentUser->sendFd)
@@ -238,7 +241,8 @@ void    Server::sendWelcome(User *user, Channel *current){
     std::string msg;
     std::string msg1;
 
-    msg = ": You have joined the following channel :" + current->channelName + " \nThe channel Topic is : " + current->channelTopic + "\r\n";;
+    msg = ": You have joined the following channel :" + current->channelName + " \nThe channel Topic is : " + current->channelTopic + "\r\n";
+    this->sendReply(user->sendFd, this->serverName, RPL_NAMREPLY, &msg);
 	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
 		throw errorErrno(); // check error
     msg1 = "The existing Channels are : \n";

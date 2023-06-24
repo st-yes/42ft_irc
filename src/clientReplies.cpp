@@ -21,6 +21,7 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 	std::cout << "[client -> server]" << reply << std::flush;
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
 		throw errorErrno(); // recheck for error
+	std::cout << "here homie ::: " << reply << std::endl;
 	//this->lostConnection(clientFd, k);
 }
 
@@ -28,8 +29,9 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 void	Server::sendWelcome(User *user)
 {
 	std::string	msg;
-
-	msg = ":" + user->serverName + " " + RPL_WELCOME + " " + user->getNick() + " :Welcome to BANANA TASBA7 " + user->getNick() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
+	//user->setNick("ovssama");
+	msg = std::string(RPL_WELCOME) + " styes " + " :Welcome to BANANA TASBA7 styes !" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
+	std::cout << msg << std::endl;
 	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
 		throw errorErrno(); // check for error
     msg = user->getNick() + " has joined the server!\r\n"; //message send to all those connected to socket ??

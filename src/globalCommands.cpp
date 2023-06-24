@@ -12,8 +12,14 @@ void Server::handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumbe
 	if (cmdParams[0] == "OPER" || cmdParams[0] == "oper")
 		this->handleCmdOper(cmdParams, UserX, paramNumber);
 	else if (cmdParams[0] == "JOIN" || cmdParams[0] == "join")
-		this->ParseJoin(cmdParams , UserX, paramNumber);
+		this->handleCmdJoin(cmdParams , UserX, paramNumber);
 	else if (cmdParams[0] == "MODE" || cmdParams[0] == "mode")
 		this->handleCmdMode(cmdParams, UserX, paramNumber);
+	else if (cmdParams[0] == "WHOIS")
+		return;
+	else if (cmdParams[0] == "PART" || cmdParams[0] == "part")
+		this->handleCmdPart(cmdParams, UserX, paramNumber);
+	//else if (cmdParams[0] == "INVITE" || cmdParams[0] == "invite")
+	//	this->handleCmdInvite(cmdParams, UserX, paramNumber);
 }
 

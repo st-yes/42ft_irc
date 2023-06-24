@@ -58,6 +58,13 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
 
 void    Server::handleCmdMode(std::string *param, User *userX, int paramNumber){
     std::string *params;
+    if (param[0] == "MODE" && param[6] == "+i"){ // MODE in user mode! change the 6 to a 1
+        params = allocateForParams(1);
+        params[0] = "Invisible mode on!";
+        this->sendReply(userX->sendFd, this->serverName, RPL_MODE, params);
+        delete [] params;
+        return;
+    }
     if (paramNumber > 5){
         params = allocateForParams(1);
         params[0] = "Not enough parameter for the options specified!";

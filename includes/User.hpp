@@ -15,6 +15,8 @@
 # define SERVERNAME "BANANA"
 
 /*--- numeric reply --*/
+# define RPL_NAMREPLY           "353"
+# define RPL_MODE               "324"
 # define RPL_TOPIC              "332"
 # define RPL_WELCOME            "001"
 # define RPL_NOTOPIC            "331"
@@ -34,6 +36,7 @@
 # define ERR_CHANOPPRIVNEEDED   "482"
 # define ERR_ERRONEUSNICKNAME	"432"
 # define ERR_ALREADYREGISTERED  "462"
+# define ERR_TOOMANYCHANNELS    "405"
 
 class Channel;
 class User{
