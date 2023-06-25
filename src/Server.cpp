@@ -121,7 +121,13 @@ void    Server::nConnection()
     newU->sendFd = clientSocket;
     newU->currentChannel = NULL;
     newU->nextChannel = NULL;
+    User *a = new User;
+    User *b = new User;
+    a->setNick("styes");
+    b->setNick("styes_");
     this->users.insert(std::make_pair(clientSocket, newU));
+    this->users.insert(std::make_pair(7, a));
+    this->users.insert(std::make_pair(8, b));
     Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }
@@ -143,30 +149,31 @@ void    Server::oConnection(int i)
     else
     {
         buffer[receivedBytes] = '\0';
-        // if (DEBUG)
-        // {
-        //     std::cout << "--------"<< std::endl;
-        //     std::cout << buffer;
-        //     std::cout << "--------"<< std::endl;
-        // }
-        if (!currentUser->userAuthentified)
+        if (DEBUG)
+        {
+            std::cout << "--------"<< std::endl;
+            std::cout << buffer;
+            std::cout << "--------"<< std::endl;
+        }
+        if (currentUser->userAuthentified == false)
         {
                 std::cout << "----- First connection -----" << std::endl;
                 this->firstConnection(i, buffer, currentUser); //first connection?
         }
-        else if (currentUser->userAuthentified)
+        else if (currentUser->userAuthentified == true)
            {
                 std::cout << "----- Regular connection -----" << std::endl;
                 this->regularConnection(buffer, currentUser);
            }
-        else if (currentUser->userAuthentified == NICK_AGAIN){
-            std::string *cmdParams = getCmdParams(buffer, currentUser);
+        else if (currentUser->userAuthentified == NICK_AGAIN)
+        {
+            std::string *cmdParams = getCmdParams(buffer, currentUser, &paramNumber);
+
             if (cmdParams[0] == "NICK" || cmdParams[0] == "nick")
                 this->handleCmdNickAgain(currentUser->sendFd, cmdParams, currentUser, paramNumber);
-                //this->handleCmdNick( cmdParams, userX, paramNumber);
             else if (cmdParams[0] == "USER" || cmdParams[0] =="user")
             {
-                currentUser->primer *=7;
+                currentUser->primer *= 7;
                 this->handleCmdUser(cmdParams,currentUser, paramNumber);
             }
         }
@@ -207,7 +214,8 @@ void    Server::lostConnection(User *user)
     close(user->sendFd);
 }
 
-void    Server::defaultChannelsAdd(User *user){
+void    Server::defaultChannelsAdd(User *user)
+{
     std::vector<Channel *>::iterator    it;
     Channel                             *current;
     int                                 index;
@@ -225,33 +233,3 @@ void    Server::defaultChannelsAdd(User *user){
     //this->sendWelcome(user, current);
     return ;
 }
-
-// void    Server::sendWelcome(User *user, Channel *current){
-//     std::string msg;
-//     std::string msg1;
-
-//     msg = ": You have joined the following channel :" + current->channelName + " \nThe channel Topic is : " + current->channelTopic + "\r\n";
-//     this->sendReply(user->sendFd, this->serverName, RPL_NAMREPLY, &msg);
-// 	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
-// 		throw errorErrno(); // check error
-//     msg1 = "The existing Channels are : \n";
-//     for (int i = 0; i != this->servChannels.size(); i++){
-//         msg1 += "- " + this->servChannels[i]->channelName;
-//         if (this->servChannels[i]->channelName == current->channelName)
-//             msg1 += " (You are here!) ";
-//         msg1 += "\r\n";
-//         if (user->sendFd == this->servSocketFd)
-//             continue;
-//     }
-//     if (send(user->sendFd, msg1.c_str(), msg1.length(), 0) == -1)
-//         throw errorErrno(); // check error
-//     msg = user->getNickForReply() + " has joined the channel!\r\n";
-//     for (int i = 0; i < this->pollers.size(); i++)
-// 	{
-//         if (this->pollers[i].fd == this->servSocketFd || this->pollers[i].fd == user->sendFd)
-//             continue;
-// 		if (authenticated(this->pollers[i].fd))
-// 			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
-// 				throw errorErrno(); // check error
-//     }
-// }

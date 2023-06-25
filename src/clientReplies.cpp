@@ -33,7 +33,7 @@ void Server::sendReply(int clientFd, std::string numericCode, std::string *param
 	std::string	reply;
 	int			i;
 
-	reply = numericCode;
+	reply = std::string(":banana ") +numericCode;
 	i = 0;
 	while (params[i] != "")
 	{
@@ -43,7 +43,7 @@ void Server::sendReply(int clientFd, std::string numericCode, std::string *param
 	}
 	reply += "\r\n";
 	//std::cout << "[client -> server]" << reply << std::flush;
-	//correspondence(CLIENT_TO_SERVER, reply);
+	correspondence(CLIENT_TO_SERVER, reply);
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
 		throw errorErrno(); // check for err
 }
@@ -51,7 +51,7 @@ void Server::sendReply(int clientFd, std::string numericCode, std::string *param
 void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan){
 	std::string reply;
 	reply = ":" + userX->getNickForReply() + " " + prefix + " " + chan->channelName + "\r\n";
-	std::cout << "---->" << reply << std::endl;
+	//std::cout << "---->" << reply << std::endl;
 	if (send(userX->sendFd, reply.c_str(), reply.length(), 0) == -1)
 	{
 		this->lostConnection(userX);

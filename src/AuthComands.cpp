@@ -57,9 +57,7 @@ void	Server::handleCmdPass(std::string	*params, User *userX ,int paramNumber)
 
 void	Server::handleCmdNick(std::string	*params, User *userX ,int paramNumber)
 {
-	std::cout << "farakiss" << std::endl;
 	std::string	*paramsRep;
-	std::cout << "hali :: -------->" << userX->primer << std::endl;
 	if (userX->primer == 5)
 	{
 		paramsRep = allocateForParams(2);
@@ -104,10 +102,8 @@ void	Server::handleCmdNick(std::string	*params, User *userX ,int paramNumber)
 	}
 	else
 	{
-		std::cout << "waaaaaa rbi" << std::endl;
 		if (nickAlreadyInUse(params[1]))
 		{
-			std::cout << 5 << std::endl;
 			userX->oldNick = params[1];
 			paramsRep = allocateForParams(3);
 			paramsRep[0] = userX->getNickForReply();
@@ -119,18 +115,14 @@ void	Server::handleCmdNick(std::string	*params, User *userX ,int paramNumber)
 		}
 		else
 		{
-			std::cout << "casscroute" << std::endl;
 			if (userX->userAuthentified == NICK_AGAIN)
 			{
-				std::cout << 6 << std::endl;
 				userX->setNick(params[1]);
 				this->sendStatusUpdate(userX->sendFd, userX, "NICK", params[1]);
 				userX->userAuthentified = false;
-				//userX->oldNick = userX->userNick;
-				//std::cout << "primer = " << userX->primer << std::endl;
+				userX->oldNick = userX->getNick();
 				if (userX->primer == 3 * 5 * 7 && userX->userAuthentified == false && userX->passSet == true)
 				{
-					std ::cout << "waaaaa" << std::endl;
 					userX->userAuthentified = true;
 					this->sendWelcome(userX);
 				}
@@ -139,7 +131,6 @@ void	Server::handleCmdNick(std::string	*params, User *userX ,int paramNumber)
 			if (userX->primer == 3 * 5 * 7 && userX->userAuthentified  == false && userX->passSet == true)
 			{
 				std::cout << 7 << std::endl;
-				std::cout << "bananaaaaa " << std::endl;
 				userX->userAuthentified = true;
 				this->sendWelcome(userX);
 			}
@@ -191,7 +182,6 @@ void	Server::handleCmdUser(std::string	*params, User *userX ,int paramNumber)
 		userX->setFullName(params[4]);
 		if (userX->primer == 3 * 5 * 7 && userX->userAuthentified == false && userX->passSet == true)
 		{
-			std::cout << "hounaaa" << std::endl;
 			userX->userAuthentified = true;
 			this->sendWelcome(userX);
 		}

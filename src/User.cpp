@@ -28,7 +28,7 @@
     }
 /*-------------------------------------------------------Setters-&-Getters-----------------------------------------------------*/
     void    User::setNick(std::string const s){
-        std::cout << "what is happening here :::::: " << s << std::endl;
+        //std::cout << "what is happening here :::::: " << s << std::endl;
         this->userNick = s;
     }
     void    User::setUsrName(std::string const s){

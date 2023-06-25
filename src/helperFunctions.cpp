@@ -124,16 +124,15 @@ bool   Server::channelFinder(std::string s, std::vector<Channel *> chan){
     return false;
 }
 
-std::string *getCmdParams(char *buffer, User *userX)
+std::string *getCmdParams(char *buffer, User *userX, int *paramNumber)
 {
     int indx;
-    int paramNumber;
 
     std::string buff(buffer);
     userX->getCommands(buff, false);
     indx = userX->commandFull.size() - 1;
-    paramNumber = countParams(userX->commandFull[indx]);
-    std::string *cmdParams = fillParams(userX->commandFull[indx], paramNumber);
+    *paramNumber = countParams(userX->commandFull[indx]) -1;
+    std::string *cmdParams = fillParams(userX->commandFull[indx], *paramNumber);
     return (cmdParams);
 }
 

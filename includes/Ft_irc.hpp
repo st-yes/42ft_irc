@@ -60,9 +60,10 @@ std::string		*fillParams(std::string cmd, int size);
 bool			isAllSpace(std::string	str);
 std::string		*allocateForParams(int size);
 std::string		assembleParmsIntoToken(std::string * params);
-std::string 	*getCmdParams(char *buffer, User *userX);
+std::string *getCmdParams(char *buffer, User *userX, int *paramNumber);
 
 /*---- DEBUG ----*/
 void	printParams(std::string *params);
 void	trimLast(std::string&	str);
 bool 	successiveSpace(std::string	cmd);
+void	correspondence(int way, std::string buff);

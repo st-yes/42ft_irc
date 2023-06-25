@@ -50,6 +50,7 @@ void	Server::sendStatusUpdate(int clientFd, User *userX, std::string com, std::s
 	else
 		message = ":" +  userX->getNickForReply() + "!" + userX->getUserForReply() + "@" + userX->getHostForReply() 
 		+ " " + com + " " + msg + "\r\n";
+	correspondence(CLIENT_TO_SERVER, message);
 	if (send(clientFd, message.c_str(), message.length(), 0) == -1)
 		throw errorErrno(); // check for error
 }
@@ -81,7 +82,6 @@ void Server::handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNum
 			first = true;
 		}
 		this->handleCmdNick(cmdParams, UserX, paramNumber);
-		std::cout << "waaaa l3aadaaaaw" << UserX->userAuthentified << std::endl;
 	}
 	else if (cmdParams[0] == "USER" || cmdParams[0]== "user")
 	{

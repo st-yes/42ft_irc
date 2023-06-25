@@ -23,6 +23,10 @@ void Server::handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumbe
 		this->handleCmdTopic(cmdParams, UserX, paramNumber);
 	else if (cmdParams[0] == "PING" || cmdParams[0] == "ping")
 		this->handleCmdPing(cmdParams, UserX, paramNumber);
+	else if (cmdParams[0] == "PING" || cmdParams[0] == "ping")
+		this->handleCmdPing(cmdParams, UserX, paramNumber);
+	else if (cmdParams[0] == "NICK"|| cmdParams[0] == "nick")
+		this->handleCmdRegularNick(cmdParams, UserX, paramNumber);
 	//else if (cmdParams[0] == "INVITE" || cmdParams[0] == "invite")
 	//	this->handleCmdInvite(cmdParams, UserX, paramNumber);
 }

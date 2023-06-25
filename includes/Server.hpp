@@ -86,7 +86,8 @@ class   Server
             bool    channelFinder(std::string s, std::vector<Channel *> chans);
             void    sendGenericReply(User *userX, std::string prefix, Channel *chan); 
             void    sendReply(int clientFd, std::string numericCode, std::string *params);
-            void	sendStatusUpdate(int clientFd, User *userX, std::string com, std::string msg);  
+            void	sendStatusUpdate(int clientFd, User *userX, std::string com, std::string msg); 
+            void    handleCmdRegularNick(std::string	*params, User *userX, int paramNumber);
         /*-------------------EXCEPTIONS------------------*/
         
 

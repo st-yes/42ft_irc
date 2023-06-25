@@ -51,7 +51,7 @@ class User{
         std::string userFullName;
         std::string userPass;
     public :
-        id_t                        userAuthentified;
+        int                        userAuthentified;
         int                         sendFd;
         int                         primer;
         Channel                     *currentChannel;

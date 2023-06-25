@@ -11,3 +11,10 @@ void	printParams(std::string *params)
 		std::cout << "[ 0 parameters]" <<  std::flush;
 	std::cout << std::endl;
 }
+void	correspondence(int way, std::string buff)
+{
+	if (way == SERVER_TO_CLIENT)
+		std::cout << "[server->client]" << buff << std::flush;
+	else if (way == CLIENT_TO_SERVER)
+		std::cout << "[client->server]" << buff << std::flush;
+}

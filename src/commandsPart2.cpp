@@ -36,7 +36,7 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
             p->channelMembers.push_back(elite);
             for (int k = 0; k != this->servChannels.size(); k++)
                 this->servChannels[k]->channelOps.push_back(elite);
-            delete userX;
+            //delete userX;
             elite->setGodPower(this);
             std::string *paramsRep;
             paramsRep = allocateForParams(2);
