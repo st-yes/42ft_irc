@@ -20,7 +20,7 @@ Server::Server(int ac, char **av)
     this->serverName = SERVERNAME;
     this->gods.insert(std::make_pair("Skafandri","22221111"));
     this->gods.insert(std::make_pair("Stoph", "k7el"));
-    this->gods.insert(std::make_pair("SoukSouk", ""));
+    this->gods.insert(std::make_pair("SoukSouk", "pepe"));
     Channel *chanDefault = NULL;
     chanDefault = new Channel("#Lobby!", "This aint no Therapy but go ahead and talk your shit away!"); 
     this->servChannels.push_back(chanDefault);
@@ -66,7 +66,7 @@ void    Server::createConnection()
         throw errorErrno();
     if (bind(this->servSocketFd, socketAddrBind, sizeof(servSocketAddr)) == -1)
         throw errorErrno();
-    //std::cout << "The server is now available on the port : " << this->portNumber << std::endl;
+    std::cout << "The server is now available on the port : " << this->portNumber << std::endl;
     if (listen(this->servSocketFd, BACKLOG) == -1)
         throw errorErrno();
     serverPoll.fd = this->servSocketFd;
@@ -117,6 +117,7 @@ void    Server::nConnection()
     newU = new User;
     newU->userAuthentified = false;
     newU->primer = 1;
+    newU->passSet = false;
     newU->sendFd = clientSocket;
     newU->currentChannel = NULL;
     newU->nextChannel = NULL;
@@ -130,6 +131,7 @@ void    Server::oConnection(int i)
     int             receivedBytes;
     char            buffer[BUFFER_SIZE];
     User            *currentUser = this->users.find(this->pollers[i].fd)->second;
+    int             paramNumber;
     
     std::memset(buffer, 0, sizeof(buffer));
     receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
@@ -141,30 +143,36 @@ void    Server::oConnection(int i)
     else
     {
         buffer[receivedBytes] = '\0';
-        if (DEBUG)
-        {
-            std::cout << "--------"<< std::endl;
-            std::cout << buffer;
-            std::cout << "--------"<< std::endl;
-        }
+        // if (DEBUG)
+        // {
+        //     std::cout << "--------"<< std::endl;
+        //     std::cout << buffer;
+        //     std::cout << "--------"<< std::endl;
+        // }
         if (!currentUser->userAuthentified)
         {
                 std::cout << "----- First connection -----" << std::endl;
-                Server::firstConnection(i, buffer, currentUser); //first connection?
-                currentUser->userAuthentified = true;
-               this->sendWelcome(currentUser);
-               this->defaultChannelsAdd(currentUser);
+                this->firstConnection(i, buffer, currentUser); //first connection?
         }
-        else
+        else if (currentUser->userAuthentified)
            {
                 std::cout << "----- Regular connection -----" << std::endl;
-                Server::regularConnection(buffer, currentUser);
+                this->regularConnection(buffer, currentUser);
            }
+        else if (currentUser->userAuthentified == NICK_AGAIN){
+            std::string *cmdParams = getCmdParams(buffer, currentUser);
+            if (cmdParams[0] == "NICK" || cmdParams[0] == "nick")
+                this->handleCmdNickAgain(currentUser->sendFd, cmdParams, currentUser, paramNumber);
+                //this->handleCmdNick( cmdParams, userX, paramNumber);
+            else if (cmdParams[0] == "USER" || cmdParams[0] =="user")
+            {
+                currentUser->primer *=7;
+                this->handleCmdUser(cmdParams,currentUser, paramNumber);
+            }
+        }
     }
     return ;
 }
-
-
 
 void    Server::regularConnection(std::string buffer, User *UserX)
 {
@@ -173,7 +181,7 @@ void    Server::regularConnection(std::string buffer, User *UserX)
 	std::string	*cmdParams;
 	std::string buff(buffer);
 
-	UserX->getCommands(buff);
+	UserX->getCommands(buff, true);
 	size = UserX->commandFull.size();
 	cmdParams = NULL;
 	for (size_t j = 0; j < size; j++)
@@ -185,25 +193,7 @@ void    Server::regularConnection(std::string buffer, User *UserX)
 			this->handleOtherCmds(UserX, cmdParams, paramNumber - 1);
 		}
 	}
-    for(int i = 0; i < this->servChannels.size(); i++)
-        std::cout << this->servChannels[i]->channelName << std::endl;
-    //this->sendEveryOne(buffer, UserX);
 }
-
-void    Server::sendEveryOne(std::string buffer, User *currentUser){
-    std::cout << "There you go ! : " << buffer << std::endl;
-        for(int k = 0; k < this->pollers.size(); k++)
-    {
-        if (this->pollers[k].fd == this->servSocketFd || this->pollers[k].fd == currentUser->sendFd)
-            continue;
-        if (this->users.find(this->pollers[k].fd)->second->userAuthentified){
-            if (send(this->pollers[k].fd, buffer.c_str(), buffer.length(), 0) == -1)
-                throw errorErrno();} // recheck for error
-        else
-            continue; 
-    }
-}
-
 /*
 * reply message when client lose connection 
 */
@@ -211,7 +201,7 @@ void    Server::lostConnection(User *user)
 {
     std::vector<int>::iterator     vit;
     std::string                    str = "|You have been disconnected from the server|\r\n";
-    std::string                    strII = user->getNick() + " Has left the server!\r\n";
+    std::string                    strII = user->getNickForReply() + " Has left the server!\r\n";
     this->deleteFromPoll(user->sendFd);
     this->users.erase(user->sendFd);
     close(user->sendFd);
@@ -221,48 +211,47 @@ void    Server::defaultChannelsAdd(User *user){
     std::vector<Channel *>::iterator    it;
     Channel                             *current;
     int                                 index;
-    for (index = 0; index != this->servChannels.size(); index++){
-        if (this->servChannels[index]->channelName == "#Lobby!")
-            break;
-    }
-    if (index != servChannels.size()){
+    index = channelFinder("Lobby!", this->servChannels);
+    if (index != servChannels.size() && index != -1){
         this->servChannels[index]->channelMembers.push_back(user);
         user->currentChannel = this->servChannels[index];
         user->nextChannel = this->servChannels[index];
         current = this->servChannels[index];
+        user->defaultChannel = this->servChannels[index];
+        this->sendGenericReply(user, "JOIN", user->defaultChannel);
     }
     else // add error!
-        return;
-    this->sendWelcome(user, current);
+        this->lostConnection(user);
+    //this->sendWelcome(user, current);
     return ;
 }
 
-void    Server::sendWelcome(User *user, Channel *current){
-    std::string msg;
-    std::string msg1;
+// void    Server::sendWelcome(User *user, Channel *current){
+//     std::string msg;
+//     std::string msg1;
 
-    msg = ": You have joined the following channel :" + current->channelName + " \nThe channel Topic is : " + current->channelTopic + "\r\n";
-    this->sendReply(user->sendFd, this->serverName, RPL_NAMREPLY, &msg);
-	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
-		throw errorErrno(); // check error
-    msg1 = "The existing Channels are : \n";
-    for (int i = 0; i != this->servChannels.size(); i++){
-        msg1 += "- " + this->servChannels[i]->channelName;
-        if (this->servChannels[i]->channelName == current->channelName)
-            msg1 += " (You are here!) ";
-        msg1 += "\r\n";
-        if (user->sendFd == this->servSocketFd)
-            continue;
-    }
-    if (send(user->sendFd, msg1.c_str(), msg1.length(), 0) == -1)
-        throw errorErrno(); // check error
-    msg = user->getNick() + " has joined the channel!\r\n";
-    for (int i = 0; i < this->pollers.size(); i++)
-	{
-        if (this->pollers[i].fd == this->servSocketFd || this->pollers[i].fd == user->sendFd)
-            continue;
-		if (authenticated(this->pollers[i].fd))
-			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
-				throw errorErrno(); // check error
-    }
-}
+//     msg = ": You have joined the following channel :" + current->channelName + " \nThe channel Topic is : " + current->channelTopic + "\r\n";
+//     this->sendReply(user->sendFd, this->serverName, RPL_NAMREPLY, &msg);
+// 	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
+// 		throw errorErrno(); // check error
+//     msg1 = "The existing Channels are : \n";
+//     for (int i = 0; i != this->servChannels.size(); i++){
+//         msg1 += "- " + this->servChannels[i]->channelName;
+//         if (this->servChannels[i]->channelName == current->channelName)
+//             msg1 += " (You are here!) ";
+//         msg1 += "\r\n";
+//         if (user->sendFd == this->servSocketFd)
+//             continue;
+//     }
+//     if (send(user->sendFd, msg1.c_str(), msg1.length(), 0) == -1)
+//         throw errorErrno(); // check error
+//     msg = user->getNickForReply() + " has joined the channel!\r\n";
+//     for (int i = 0; i < this->pollers.size(); i++)
+// 	{
+//         if (this->pollers[i].fd == this->servSocketFd || this->pollers[i].fd == user->sendFd)
+//             continue;
+// 		if (authenticated(this->pollers[i].fd))
+// 			if (send(this->pollers[i].fd, msg.c_str(), msg.length(), 0) == -1)
+// 				throw errorErrno(); // check error
+//     }
+// }

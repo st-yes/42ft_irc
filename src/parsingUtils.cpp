@@ -49,7 +49,7 @@ void tokenizeCmd(std::string& cmd, std::string *params)
 			{
 				params[i] += token;
 				params[i] += " ";
-				i++;
+				//i++;
 			}
 		}
     }

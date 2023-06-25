@@ -40,7 +40,7 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
             elite->setGodPower(this);
             std::string *paramsRep;
             paramsRep = allocateForParams(2);
-            paramsRep[0] = "OPER";
+            paramsRep[0] = userX->getNickForReply();
             paramsRep[1] = ":A God among the living";
             sendReply(userX->sendFd, this->serverName, RPL_YOUREOPER, paramsRep);
             delete [] paramsRep;
@@ -48,7 +48,7 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
         else{
             std::string *paramsRep;
             paramsRep = allocateForParams(2);
-            paramsRep[0] = "OPER";
+            paramsRep[0] = userX->getNickForReply();
             paramsRep[1] = ":invalid credentials";
             sendReply(userX->sendFd, this->serverName, ERR_PASSWDMISMATCH, paramsRep);
             delete [] paramsRep;
@@ -66,8 +66,9 @@ void    Server::handleCmdMode(std::string *param, User *userX, int paramNumber){
         return;
     }
     if (paramNumber > 5){
-        params = allocateForParams(1);
-        params[0] = "Not enough parameter for the options specified!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply();
+        params[1] = ": Not enough Parameters!";
         this->sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS, params);
         delete [] params;
         return;
@@ -75,8 +76,9 @@ void    Server::handleCmdMode(std::string *param, User *userX, int paramNumber){
     int check = checkStringToken(param, paramNumber);
     if (check > 2){
         //Error of +- or too many Channels;
-        params = allocateForParams(1);
-        params[0] = "Error in the syntax used!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply();
+        params[1] = ": Syntax Error!";
         this->sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS, params);
         delete [] params;
         return;
@@ -85,8 +87,9 @@ void    Server::handleCmdMode(std::string *param, User *userX, int paramNumber){
         switch (check){
             case 1:{
                 // Error, no channel given
-                params = allocateForParams(1);
-                params[0] = "No Channel has been specified!";
+                params = allocateForParams(2);
+                params[0] = userX->getNickForReply();
+                params[1] = ":No Channel has been specified!";
                 this->sendReply(userX->sendFd, this->serverName, ERR_USERNOTINCHANNEL, params);
                 delete [] params;
                 return;
@@ -102,7 +105,8 @@ void    Server::handleCmdMode(std::string *param, User *userX, int paramNumber){
                     if (!find){
                         //Error Channel doesnt exist
                         params = allocateForParams(1);
-                        params[0] = "Channel specified does not exist!";
+                        params[0] = userX->getNickForReply();
+                        params[1] = ": Channel does not exist!";
                         this->sendReply(userX->sendFd, this->serverName, ERR_USERNOTINCHANNEL, params);
                         delete [] params;
                         return;
@@ -128,8 +132,9 @@ void    Server::handleCmdModeOpt(std::string *params, User *userX, Channel *Ch){
             paramIndex++;
             if (params[paramIndex] == ""){
                 // Error not enough parameters
-                params = allocateForParams(1);
-                params[0] = "Not enough parameter for the options specified!";
+                params = allocateForParams(2);
+                params[0] = userX->getNickForReply() + " " + Ch->channelName;
+                params[1] = ":Not enough parameter for the options specified!";
                 this->sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS, params);
                 delete [] params;
                 return;
@@ -140,8 +145,9 @@ void    Server::handleCmdModeOpt(std::string *params, User *userX, Channel *Ch){
             options.insert(std::make_pair(params[2].c_str()[i], params[1]));
         else{
             // Error mode option not correct
-            param = allocateForParams(1);
-            param[0] = "The Options specified are not correct! \" itkol \"";
+            params = allocateForParams(2);
+            params[0] = userX->getNickForReply() + " " + Ch->channelName;
+            param[1] = "The Options specified are not correct! \" itkol \"";
             this->sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS, params);
             delete [] param;
             return;
@@ -187,32 +193,37 @@ void    Server::handleCmdModeOptI(User *userX, Channel *chan, int mode){
     ircGod  *God = dynamic_cast<ircGod*>(userX);
     if (!God && this->findUserinChan(userX->sendFd, chan->channelOps) == -1){
         //Error User is not a chanop
-        params = allocateForParams(1);
-        params[0] = "MODE : You are not a Chanop!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : You are not a Chanop!";
         this->sendReply(userX->sendFd, this->serverName, ERR_CHANOPPRIVNEEDED, params);
         delete [] params;
         return;
     }
     if (mode == 0 && !chan->inviteMode){
-        params = allocateForParams(1);
-        params[0] = "MODE : The Invite only Mode is already off!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Invite only Mode is already off!";
         this->sendReply(userX->sendFd, this->serverName, ERR_INVITEONLYCHAN, params);
     }
     else if (mode == 1 && chan->inviteMode){
-        params = allocateForParams(1);
-        params[0] = "MODE : The Invite only Mode is already On!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Invite only Mode is already On!";
         this->sendReply(userX->sendFd, this->serverName, ERR_INVITEONLYCHAN, params);
     }
     else if (mode == 0 && chan->inviteMode){
         chan->inviteMode = false;
-        params = allocateForParams(1);
-        params[0] = "MODE : The Invite only Mode is now Off!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Invite only Mode is now Off!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
     }
     else if (mode == 1 && !chan->inviteMode){
         chan->inviteMode = true;
-        params = allocateForParams(1);
-        params[0] = "MODE : The Invite only Mode is now On!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Invite only Mode is now On!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
     }
     delete [] params;
@@ -223,32 +234,37 @@ void    Server::handleCmdModeOptT(User *userX, Channel *chan, int mode){
         ircGod  *God = dynamic_cast<ircGod*>(userX);
     if (this->findUserinChan(userX->sendFd, chan->channelOps) == -1 && !God){
         //Error User is not a chanop
-        params = allocateForParams(1);
-        params[0] = "MODE : You are not a Chanop!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : You are not a Chanop!";
         this->sendReply(userX->sendFd, this->serverName, ERR_CHANOPPRIVNEEDED, params);
         delete [] params;
         return;
     }
     if (mode == 0 && !chan->topicProtectMode){
-        params = allocateForParams(1);
-        params[0] = "MODE : The Topic Protection Mode is already off!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Topic Protection Mode is already off!";
         this->sendReply(userX->sendFd, this->serverName, RPL_TOPIC, params);
     }
     else if (mode == 1 && chan->topicProtectMode){
-        params = allocateForParams(1);
-        params[0] = "MODE : The Topic Protection Mode is already On!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Topic Protection Mode is already On!";
         this->sendReply(userX->sendFd, this->serverName, RPL_TOPIC, params);
     }
     else if (mode == 0 && chan->topicProtectMode){
         chan->inviteMode = false;
-        params = allocateForParams(1);
-        params[0] = "MODE : The Topic Protection Mode is now Off!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Topic Protection Mode is now Off!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
     }
     else if (mode == 1 && !chan->topicProtectMode){
         chan->inviteMode = true;
-        params = allocateForParams(1);
-        params[0] = "MODE : The Topic Protection Mode is now On!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : The Topic Protection Mode is now On!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
     }
     delete [] params;
@@ -258,47 +274,44 @@ void    Server::handleCmdModeOptO(User *userX, std::string s, Channel *chan, int
     ircGod  *God = dynamic_cast<ircGod*>(userX);
     User    *player = findUserinServ(s);
     std::string *params;
-    std::string *params2;
     if(!God){
         // Error you dont have IRCGod powers.
-        params = allocateForParams(1);
-        params[0] = "MODE : You are not a God!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : You are not a God!";
         this->sendReply(userX->sendFd, this->serverName, ERR_NOPRIVILEGES, params);
     }
     else if (God && (!player || this->findUserinChan(player->sendFd, chan->channelMembers) == -1)){
         // Error User doesnt exist
-        params = allocateForParams(1);
-        params[0] = "MODE : User does not exist in channel: " + chan->channelName;
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : User does not exist in channel: " + chan->channelName;
         this->sendReply(userX->sendFd, this->serverName, ERR_USERNOTINCHANNEL, params);
     }
     else{
         if (mode == 1 && this->findUserinChan(player->sendFd, chan->channelOps) == -1){
             chan->channelOps.push_back(player);
-            params = allocateForParams(1);
-            params2 = allocateForParams(1);
-            params[0] = "MODE :" + player->getNick() + " is now a Chanop of " + chan->channelName;
-            params2[0] = "MODE : You are now a Chanop of " + chan->channelName; 
+            params = allocateForParams(2);
+            params[0] = userX->getNickForReply() + " " + chan->channelName;
+            params[1] = ":MODE : You are now a Chanop of " + chan->channelName; 
             this->sendReply(God->sendFd, this->serverName, RPL_ENDOFBANLIST, params);
-            this->sendReply(player->sendFd, this->serverName, RPL_ENDOFBANLIST, params2);
-            delete [] params2;
         }
         else if (mode == 0 && this->findUserinChan(player->sendFd, chan->channelOps) != -1){
-            params = allocateForParams(1);
-            params2 = allocateForParams(1);
-            params[0] = "MODE :" + player->getNick() + " is no longer a Chanop of " + chan->channelName;
-            params2[0] = "MODE : You are no longer a Chanop of " + chan->channelName;
+            params = allocateForParams(2);
+            params[0] = userX->getNickForReply() + " " + chan->channelName;
+            params[1] = ":MODE : You are no longer a Chanop of " + chan->channelName;
             this->sendReply(God->sendFd, this->serverName, RPL_ENDOFBANLIST, params);
-            this->sendReply(player->sendFd, this->serverName, RPL_ENDOFBANLIST, params2);
-            delete [] params2;
         }
         else if (mode == 1 && this->findUserinChan(player->sendFd, chan->channelOps) != 1){
-            params = allocateForParams(1);
-            params[0] = "MODE : " + player->getNick() + " is already a ChanOp!";
+            params = allocateForParams(2);
+            params[0] = userX->getNickForReply() + " " + chan->channelName;
+            params[1] = ":MODE : " + player->getNickForReply() + " is already a ChanOp!";
             this->sendReply(player->sendFd, this->serverName, RPL_ENDOFBANLIST, params); // User is already a channel Operator}
         }
         else if (mode == 0 && this->findUserinChan(player->sendFd, chan->channelOps) == -1){
-            params = allocateForParams(1);
-            params[0] = "MODE : " + player->getNick() + " is already not a ChanOp!";
+            params = allocateForParams(2);
+            params[0] = userX->getNickForReply() + " " + chan->channelName;
+            params[1] = ":MODE : " + player->getNickForReply() + " is already not a ChanOp!";
             this->sendReply(player->sendFd, this->serverName, RPL_ENDOFBANLIST, params); // User is not a channel Operator
         }
     }
@@ -310,8 +323,9 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
     std::string *params;
     if (!God && this->findUserinChan(userX->sendFd, chan->channelOps) == -1){
         //Error User is not a chanop
-        params = allocateForParams(1);
-        params[0] = "MODE : You are not a Chanop!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : You are not a Chanop!";
         this->sendReply(userX->sendFd, this->serverName, ERR_CHANOPPRIVNEEDED, params);
         delete [] params;
         return;
@@ -320,17 +334,19 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
         switch (mode){
             case 0 :{
                 chan->keyMode = false;
-                params = allocateForParams(1);
-                params[0] = "MODE :" + chan->channelName + " no longer has a password!";
-                this->sendReply(userX->sendFd, this->serverName, RPL_NOTOPIC, params);
+                params = allocateForParams(2);
+                params[0] = userX->getNickForReply() + " " + chan->channelName;
+                params[1] = ":MODE :" + chan->channelName + " no longer has a password!";
+                this->sendReply(userX->sendFd, this->serverName, RPL_INVITING, params);
                 delete [] params;
                 break;
             }
             case 1 :{
                 chan->keyMode = true;
                 chan->setTheKey(s);
-                params = allocateForParams(1);
-                params[0] = "MODE :" + chan->channelName + "has a new password!";
+                params = allocateForParams(2);
+                params[0] = userX->getNickForReply() + " " + chan->channelName;
+                params[1] = ":MODE :" + chan->channelName + "has a new password!";
                 this->sendReply(userX->sendFd, this->serverName, RPL_INVITING, params);
                 delete [] params;
                 break;
@@ -342,8 +358,9 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
     else if (!chan->keyMode){
         switch (mode){
             case 0 :{
-                params = allocateForParams(1);
-                params[0] = "MODE : " + chan->channelName + " already has no password";
+                params = allocateForParams(2);
+                params[0] = userX->getNickForReply() + " " + chan->channelName;
+                params[1] = ":MODE : " + chan->channelName + " already has no password";
                 this->sendReply(userX->sendFd, this->serverName, RPL_NOTOPIC, params);
                 delete [] params;
                 break;
@@ -351,8 +368,9 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
             case 1 :{
                 chan->keyMode = true;
                 chan->setTheKey(s);
-                params = allocateForParams(1);
-                params[0] = "MODE : " +chan->channelName + "has a new password!";
+                params = allocateForParams(2);
+                params[0] = userX->getNickForReply() + " " + chan->channelName;
+                params[1] = "MODE : " +chan->channelName + "has a new password!";
                 this->sendReply(userX->sendFd, this->serverName, RPL_INVITING, params);
                 delete [] params;
                 break;
@@ -367,8 +385,9 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
     std::string *params;
     if (!God && this->findUserinChan(userX->sendFd, chan->channelOps) == -1){
         //Error User is not a chanop
-        params = allocateForParams(1);
-        params[0] = "MODE : You are not a Chanop!";
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = ":MODE : You are not a Chanop!";
         this->sendReply(userX->sendFd, this->serverName, ERR_CHANOPPRIVNEEDED, params);
         delete [] params;
         return;
@@ -380,8 +399,9 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
             switch (mode){
                 case 0 :{
                     chan->limitMode = false; // error there s no limit 
-                    params = allocateForParams(1);
-                    params[0] = "MODE :" + chan->channelName + " is no longer limited!";
+                    params = allocateForParams(2);
+                    params[0] = userX->getNickForReply() + " " + chan->channelName;
+                    params[1] = "MODE :" + chan->channelName + " is no longer limited!";
                     this->sendReply(userX->sendFd, this->serverName, RPL_NOTOPIC, params);
                     delete [] params;
                     break;
@@ -392,8 +412,9 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
                     else
                         chan->limitMode = true;
                     chan->setTheLimit(limit);
-                    params = allocateForParams(1);
-                    params[0] = "MODE :" + chan->channelName + "has a new limit!"; 
+                    params = allocateForParams(2);
+                    params[0] = userX->getNickForReply() + " " + chan->channelName;
+                    params[1] = ":MODE :" + chan->channelName + "has a new limit!"; 
                     this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
                     delete [] params;
                     break;
@@ -405,8 +426,9 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
         else if (!chan->keyMode){
             switch (mode){
                 case 0 :{
-                    params = allocateForParams(1);
-                    params[0] = "MODE :" + chan->channelName + " already has no limit";
+                    params = allocateForParams(2);
+                    params[0] = userX->getNickForReply() + " " + chan->channelName;
+                    params[1] = ":MODE :" + chan->channelName + " already has no limit";
                     this->sendReply(userX->sendFd, this->serverName, RPL_NOTOPIC, params);
                     delete [] params;
                     break;
@@ -417,8 +439,9 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
                     else
                         chan->keyMode = true;
                     chan->setTheLimit(limit);
-                    params = allocateForParams(1);
-                    params[0] = "MODE" + chan->channelName + "has a new limit!";
+                    params = allocateForParams(2);
+                    params[0] = userX->getNickForReply() + " " + chan->channelName;
+                    params[1] = "MODE" + chan->channelName + "has a new limit!";
                     this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
                     delete [] params;
                     break;
@@ -430,21 +453,12 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
     }
     else{
         //Error here for non numeric argument
-        params = allocateForParams(1);
-        params[0] = " MODE : Your argument is non numeric!"; 
+        params = allocateForParams(2);
+        params[0] = userX->getNickForReply() + " " + chan->channelName;
+        params[1] = " MODE : Your argument is non numeric!"; 
         this->sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS, params);
         delete [] params;
     }
     return;
-}
-
-Channel   *Server::channelFinder(std::string s){
-    if(this->servChannels.empty())
-        return NULL;
-    for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
-        if ((*it)->channelName == s)
-            return (*it);
-    }
-    return NULL;
 }
 

@@ -56,8 +56,10 @@ class   Server
         /*-- COMMANDS PART 1--*/
         void    handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNumber);
         void	handleCmdPass(std::string	*params, User *userX, int paramNumber);
-        void	handleCmdNick(std::string	*params, User *userX, int paramNumber);
+        void	handleCmdNick(std::string	*params, User *userX ,int paramNumber);
         void	handleCmdUser(std::string	*params, User *userX, int paramNumber);
+        void	handleCmdNickAgain(int clientFd, std::string	*params, User *userX ,int paramNumber);
+        void    handleCmdPing(std::string *s, User *a, int b);
         /*-- COMMANDS PART 2--*/
         void    handleCmdOper(std::string   *params, User *userX, int paramNumber);
         void    handleCmdMode(std::string   *params, User *userX, int paramNumber);
@@ -67,18 +69,24 @@ class   Server
         void    handleCmdModeOptT(User *userX, Channel *chan, int mode);
         void    handleCmdModeOptO(User *userX, std::string s, Channel *chan, int mode);
         void    handleCmdModeOptK(User *userX, std::string s, Channel *chan, int mode);
-        void    handleCmdModeOptL(User *userX, std::string s, Channel *chan, int mode); 
+        void    handleCmdModeOptL(User *userX, std::string s, Channel *chan, int mode);
+        void    handleCmdTopic(std::string *params, User *userX, int paramNumber);
         /*-- COMMANDS PART 3--*/
         void    handleCmdJoin(std::string* str, User* Userx, int paramNumber);
-        void    JoinFunc(std::map<std::string, std::string>   tmp, int i);
+        void    JoinFunc(std::map<std::string, std::string>   tmp, User *userX);
         void    handleCmdPart(std::string *s, User *userX, int paramNumber);
-        void    ParsePart(std::string& channel, std::string& channel2, std::string* str, std::string& reason);
+        void    ParsePart(std::vector<std::string> &channel,std::string* str, std::string& reason);
     
         /*-- HELPER-FUNCTIONS --*/
             int     findUserinChan(int fd, std::vector<User *> x);
             User    *findUserinServ(std::string name);
+            User    *findUserinServ(int fd);
             void    deleteFromPoll(int fd);
-        Channel     *channelFinder(std::string s);
+            Channel *channelFinder(std::string s);
+            bool    channelFinder(std::string s, std::vector<Channel *> chans);
+            void    sendGenericReply(User *userX, std::string prefix, Channel *chan); 
+            void    sendReply(int clientFd, std::string numericCode, std::string *params);
+            void	sendStatusUpdate(int clientFd, User *userX, std::string com, std::string msg);  
         /*-------------------EXCEPTIONS------------------*/
         
 

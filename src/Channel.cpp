@@ -52,3 +52,6 @@ void    Channel::setTheLimit(size_t lim){
     }
     return;
 }
+size_t  Channel::getChanLimit(){
+    return limit;
+}

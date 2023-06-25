@@ -34,7 +34,17 @@ User *Server::findUserinServ(std::string s){
 	if (this->users.empty())
 		return NULL;
 	for(std::map<int, User *>::iterator it = this->users.begin(); it != this->users.end(); it++){
-		if (it->second->getNick() == s)
+		if (it->second->getNickForReply() == s)
+			return (it->second);
+	}
+	return NULL;
+}
+
+User *Server::findUserinServ(int fd){
+	if (this->users.empty())
+		return NULL;
+	for(std::map<int, User *>::iterator it = this->users.begin(); it != this->users.end(); it++){
+		if (it->second->sendFd == fd)
 			return (it->second);
 	}
 	return NULL;
@@ -92,6 +102,39 @@ size_t	checkNums(std::string s){
 			return false;
 	}
 	return true;
+}
+
+Channel   *Server::channelFinder(std::string s){
+    if(this->servChannels.empty())
+        return NULL;
+    for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
+        if ((*it)->channelName == s)
+            return (*it);
+    }
+    return NULL;
+}
+
+bool   Server::channelFinder(std::string s, std::vector<Channel *> chan){
+    if(chan.empty())
+        return false;
+    for (std::vector<Channel*>::iterator it = chan.begin(); it != chan.end(); it++){
+        if ((*it)->channelName == s)
+            return true;
+    }
+    return false;
+}
+
+std::string *getCmdParams(char *buffer, User *userX)
+{
+    int indx;
+    int paramNumber;
+
+    std::string buff(buffer);
+    userX->getCommands(buff, false);
+    indx = userX->commandFull.size() - 1;
+    paramNumber = countParams(userX->commandFull[indx]);
+    std::string *cmdParams = fillParams(userX->commandFull[indx], paramNumber);
+    return (cmdParams);
 }
 
 // void	alternatives(std::string command, std::string input)

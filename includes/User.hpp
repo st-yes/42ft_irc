@@ -37,6 +37,10 @@
 # define ERR_ERRONEUSNICKNAME	"432"
 # define ERR_ALREADYREGISTERED  "462"
 # define ERR_TOOMANYCHANNELS    "405"
+# define ERR_BADCHANNELKEY      "475"
+# define ERR_NOSUCHCHANNEL      "403"
+# define ERR_CHANNELISFULL      "471"
+# define ERR_NOPRIVS            "491"
 
 class Channel;
 class User{
@@ -47,24 +51,31 @@ class User{
         std::string userFullName;
         std::string userPass;
     public :
-        bool                        userAuthentified;
+        id_t                        userAuthentified;
         int                         sendFd;
         int                         primer;
         Channel                     *currentChannel;
         Channel                     *nextChannel;
+        Channel                     *defaultChannel;
         std::string                 serverName;
+        std::string                 oldNick;
+        std::vector<Channel *>      invitedChannels;
         std::vector<std::string>    commandFull;
+        bool                        passSet;
+        bool                        nickSet;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);
         User(User const &s);
         virtual ~User();
         User const  &operator=(User const & s);
-        void    getCommands(std::string	buffer);
+
+        public :
+            void    getCommands(std::string	buffer, bool reset);
+            bool    validNick(std::string s);
     /*-----------------------------Setters------------------------------------*/
     public :
         void    setNick(std::string const s);
-        void    setNick(std::string const s, int mode);
         void    setUsrName(std::string const s);
         void    setUsrName(std::string const s, int mode);
         void    setFullName(std::string const s);
@@ -77,6 +88,9 @@ class User{
         std::string const getUsrName();
         std::string const getFullName();
         std::string const getUsrHostName();
+        std::string         getNickForReply();
+        std::string         getUserForReply();
+        std::string         getHostForReply();
     /*-------------------------**Member-Functions----------------------------*/
 
 };

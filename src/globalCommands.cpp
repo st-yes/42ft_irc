@@ -19,6 +19,10 @@ void Server::handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumbe
 		return;
 	else if (cmdParams[0] == "PART" || cmdParams[0] == "part")
 		this->handleCmdPart(cmdParams, UserX, paramNumber);
+	else if (cmdParams[0] == "TOPIC" || cmdParams[0] == "topic")
+		this->handleCmdTopic(cmdParams, UserX, paramNumber);
+	else if (cmdParams[0] == "PING" || cmdParams[0] == "ping")
+		this->handleCmdPing(cmdParams, UserX, paramNumber);
 	//else if (cmdParams[0] == "INVITE" || cmdParams[0] == "invite")
 	//	this->handleCmdInvite(cmdParams, UserX, paramNumber);
 }

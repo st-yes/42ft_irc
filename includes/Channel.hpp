@@ -32,6 +32,7 @@ class   Channel{
         std::string GetThekey();
         void        setTheKey(std::string s);
         void        setTheLimit(size_t t);
+        size_t      getChanLimit();
 
 
 };

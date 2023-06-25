@@ -28,6 +28,7 @@
     }
 /*-------------------------------------------------------Setters-&-Getters-----------------------------------------------------*/
     void    User::setNick(std::string const s){
+        std::cout << "what is happening here :::::: " << s << std::endl;
         this->userNick = s;
     }
     void    User::setUsrName(std::string const s){
@@ -38,9 +39,6 @@
     }
     void    User::setUsrHostName(std::string const s){
         this->userHostName = s;
-    }
-    void    User::setNick(std::string const s, int mode){
-        this->userNick += s;
     }
     void    User::setUsrName(std::string const s, int mode){
         this->userName += s;
@@ -63,3 +61,32 @@
     std::string const User::getUsrHostName(){
         return (this->userHostName);
     }
+
+bool    User::validNick(std::string nick)
+{
+    if (nick[0] == '#' || nick[0] == '"')
+        return (false);
+    return (true);
+}
+
+std::string	User::getNickForReply()
+{
+	if (this->userNick.empty())
+		return ("*");
+	else
+		return (this->userNick);
+}
+std::string	User::getUserForReply()
+{
+	if (this->userName.empty())
+		return ("*");
+	else
+		return (this->userName);
+}
+std::string	User::getHostForReply()
+{
+	if (this->userHostName.empty())
+		return ("*");
+	else
+		return (this->userHostName);
+}

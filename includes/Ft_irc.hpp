@@ -32,6 +32,15 @@ enum	commands
 	USER
 };
 
+enum flags
+{
+	SERVER_TO_CLIENT = 2,
+	CLIENT_TO_SERVER,
+	FAILURE,
+	NICK_AGAIN,
+	NO_RESET
+};
+
 void	errorMsg(int error);
 bool	validPort(std::string s);
 bool	validPass(std::string s);
@@ -50,6 +59,8 @@ void 			tokenizeCmd(std::string& cmd, std::string *params);
 std::string		*fillParams(std::string cmd, int size);
 bool			isAllSpace(std::string	str);
 std::string		*allocateForParams(int size);
+std::string		assembleParmsIntoToken(std::string * params);
+std::string 	*getCmdParams(char *buffer, User *userX);
 
 /*---- DEBUG ----*/
 void	printParams(std::string *params);

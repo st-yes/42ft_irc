@@ -27,8 +27,8 @@ void    Server::handleCmdJoin(std::string* str, User* Userx, int paramNumber)
     std::vector<std::string> Pass;
     if (str[1][0] == '0')
     {
-        str[1] = this->users[Userx->sendFd]->currentChannel->channelName;
-        str[2] = this->users[Userx->sendFd]->nextChannel->channelName;
+        str[1] = Userx->currentChannel->channelName;
+        str[2] = Userx->nextChannel->channelName;
         this->handleCmdPart(str, Userx, paramNumber);
         return ;
     }
@@ -44,11 +44,13 @@ void    Server::handleCmdJoin(std::string* str, User* Userx, int paramNumber)
                     f = str[i].find(",");
                 }
                 Channls.push_back(str[i].substr(0));
+                break ; 
             }
             case 2:{
                 f = str[i].find(",");
                 while (f != std::string::npos){
                     Pass.push_back(str[i].substr(0, f));
+                    
                     str[i] = str[i].substr(f + 1);
                     f = str[i].find(",");
                 }
@@ -58,12 +60,9 @@ void    Server::handleCmdJoin(std::string* str, User* Userx, int paramNumber)
     }
     if (Channls.size() > 2)
     {
-        std::string *tr = allocateForParams(1);
-        tr[0] = ": To many Channels";
-        sendReply(Userx->sendFd, "blackiie", ERR_TOOMANYCHANNELS , tr);
-        std::string msj = "ERROR :TOO MANY CHANNELS\r\n";
-        if (send(Userx->sendFd, msj.c_str(), msj.length(), 0) == -1)
-		    throw errorErrno();
+        std::string *param = allocateForParams(1);
+        param[0] = Userx->getNickForReply();
+        sendReply(Userx->sendFd, this->serverName, ERR_TOOMANYCHANNELS , param);
         return ;
     }
     i = 0;
@@ -71,121 +70,123 @@ void    Server::handleCmdJoin(std::string* str, User* Userx, int paramNumber)
         Channels.insert(std::pair<std::string, std::string>(Channls[1], Pass[1]));
     }
     Channels.insert(std::pair<std::string, std::string>(Channls[0], Pass[0]));
-    this->JoinFunc(Channels, Userx->sendFd);
+    this->JoinFunc(Channels, Userx);
 }
 
-void    Server::JoinFunc(std::map<std::string, std::string>   tmp, int i){
+void    Server::JoinFunc(std::map<std::string, std::string>   tmp, User* Userx){
 
     /* !!!! if the channel is private he need invitation!!!! === */
     std::map<std::string, std::string>::iterator p = tmp.begin();
     std::cout << tmp.size() << std::endl;
     while(p != tmp.end())
     {
-        // if (this->users.find(i)->second->nextChannel->channelName != "#Lobby!" && p->first != "#Lobby!")
+        // if (this->users.find(i)->second->nextChannel->channelName != "#Lobby!" && p->first != "#Lobby!") |STEPH|
         //     {std::cout<< this->users.find(i)->second->nextChannel->channelName << "   ur limit channels to join is 2\n";return;}
-        int it = CheckChannelIFexist(this->servChannels, p);
-        if (i == 0){
-                this->servChannels[it]->channelMembers.push_back(this->users.find(i)->second);
-                this->users.find(i)->second->nextChannel = this->users.find(i)->second->currentChannel;
-                this->users.find(i)->second->currentChannel = this->servChannels[it];
-
+    
+        Channel   *Chanl = this->channelFinder(p->first);
+        Channel   *nw;
+        if (Chanl == NULL)
+        {
+            nw = new Channel(p->first, "", p->second);
+            nw->channelMembers.push_back(Userx);
+            Userx->nextChannel = Userx->currentChannel;
+            Userx->currentChannel = nw;
+            this->servChannels.push_back(nw);
+            nw->channelOps.push_back(Userx);
         }
         else{
-                Channel *nw = new Channel(p->first, "", p->second);
-                nw->channelMembers.push_back(this->users.find(i)->second);
-                this->users.find(i)->second->nextChannel = this->users.find(i)->second->currentChannel;
-                this->users.find(i)->second->currentChannel = nw;
-                this->servChannels.push_back(nw);
+            if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)){
+                std::string *param = allocateForParams(1);
+                param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+                this->sendReply(Userx->sendFd, this->serverName, ERR_INVITEONLYCHAN, param);
+                delete [] param;
+                return;
             }
+            if (Chanl->limitMode && Chanl->channelMembers.size() >= Chanl->getChanLimit()){
+                std::string *param = allocateForParams(1);
+                param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+                this->sendReply(Userx->sendFd, this->serverName, ERR_CHANNELISFULL, param);
+                delete [] param;
+                return;
+            }
+            if (Chanl->GetThekey() != p->second) // || or the user need invite if the channel is private
+            {
+                std::string *param = allocateForParams(1);
+                param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+                this->sendReply(Userx->sendFd, this->serverName, ERR_BADCHANNELKEY, param);
+                delete [] param;
+                return;
+            }
+            Chanl->channelMembers.push_back(Userx);
+            Userx->nextChannel = Userx->currentChannel;
+            Userx->currentChannel = Chanl;
+        }
+        this->sendGenericReply(Userx, "JOIN", nw);
         p++;
     }
-    std::string reply = ":styes JOIN frkouss \r\n";
-    if (send(i, reply.c_str(), reply.length(), 0) == -1)
-		throw errorErrno();
-    std::cout << reply << std::endl;
-};
+    return ;
+}
 
-void    Server::ParsePart(std::string& channel, std::string& channel2, std::string* str, std::string& reason){
+void    Server::ParsePart(std::vector<std::string> &channel,std::string* str, std::string& reason){
 
+    std::vector<std::string>::iterator it;
+    std::string tmp;
+    std::string tmp2;
     if (str[2] != "")
         reason = str[2];
-    channel = str[1].substr(0, str[1].find(","));
-    str[1] = str[1].substr(str[1].find(",") + 1);
-    if (str[1] != channel && str[1][0] != '#'){
-        str[1] = '#' + str[1];
-        channel2 = str[1];
-    }
-    if (channel[0] != '#')
-        channel = '#' + channel;
+    tmp = str[1].substr(0, str[1].find(","));
+    tmp2 = str[1].substr(str[1].find(",") + 1);
+    channel.push_back(tmp);
+    channel.push_back(tmp2);
 }
 
 void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
 
     std::string channel2;
-    std::string channel;
     std::string reason;
+    std::vector<std::string >channel;
+    std::vector<std::string >::iterator it;
 
-   ParsePart(channel, channel2, str, reason);
-    // if (channel.empty() == 1)
-    //     std::cout << "yaaak akhuya hasan \n"; return ;
+   this->ParsePart(channel, str, reason);
     int i = 0;
 
-
-    while(i < this->servChannels.size())
-    {
-        if (channel == "Lobby!")
-            {std::cout << "u can't get out from ur default channel\n";return;}
-        std::cout << "channel name " << this->servChannels[i]->channelName << std::endl;
-        if (this->servChannels[i]->channelName == channel)
-        {
-            // check if the user in this channel;
-            int j = 0;
-            while(j < this->servChannels[i]->channelMembers.size())
-            {
-                if (this->servChannels[i]->channelMembers[j]->sendFd == Userx->sendFd)
-                {
-                    User *tmp = this->servChannels[i]->channelMembers[j];
-                    this->servChannels[i]->channelMembers.erase(this->servChannels[i]->channelMembers.begin() + j);
-
-                        // std::cout << "========++===========" <<this->users.find(Userx->sendFd)->second->currentChannel->channelName << std::endl;
-	                    // std::cout << "========++==========" <<this->users.find(Userx->sendFd)->second->nextChannel->channelName << std::endl;
-                    if (this->users.find(Userx->sendFd)->second->currentChannel->channelName == channel){
-                         this->users.find(Userx->sendFd)->second->currentChannel = this->users.find(Userx->sendFd)->second->nextChannel;
-                        this->users.find(Userx->sendFd)->second->nextChannel = this->servChannels[0];
-                        // std::cout << "===++++++++++==++====" <<this->users.find(Userx->sendFd)->second->currentChannel->channelName << std::endl;
-	                    // std::cout << "==++++++++++++==++====" <<this->users.find(Userx->sendFd)->second->nextChannel->channelName << std::endl;
-                    }
-                    else{
-                        std::cout << "hola senior \n";
-                        this->users.find(Userx->sendFd)->second->nextChannel = this->servChannels[0];
-                    }//
-                    std::string reply = ":styes PART " + this->servChannels[i]->channelName + "\r\n";
-                        if (send(Userx->sendFd, reply.c_str(), reply.length(), 0) == -1)
-		                    throw errorErrno();
-                    std::cout << "|" << this->servChannels[i]->channelName << "|" << std::endl; 
-                    std::cout << "here" + reply << std::endl;
-                    // delete tmp;
-                    if (channel2 != "")
-                    {
-                        channel = channel2;
-                        i = 0;
-                        break;
-                    }
-                    else{
-                        return ;}
-                }
-                j++;
-                if (j == this->servChannels[i]->channelMembers.size())
-                    {std::cout << "u r not member in this channel\n";return;}
-            }
-        }
-        i++;
-        if (i == this->servChannels.size())
-        {
+    for(it = channel.begin(); it != channel.end();it++){
+        Channel   *Chanl = this->channelFinder(it->c_str());
+        if (Chanl == NULL){ // please recheck this
             std::cout << "the channel not exist\n";
-            return;
+                return;
+        }
+        int j = Chanl->findUserinChannel(Userx->sendFd); 
+        if (j != -1){
+            User *tmp = Chanl->channelMembers[j];
+            Chanl->channelMembers.erase(Chanl->channelMembers.begin() + j);
+            if (tmp->currentChannel->channelName == it->c_str()){
+                    tmp->currentChannel = tmp->nextChannel;
+                tmp->nextChannel = this->servChannels[0]; // this-> serverchannels[0] == default == lobby;
+            }
+            else{
+                if (this->servChannels[0])
+                    tmp->nextChannel = this->servChannels[0];
+            }
+            if(Chanl->channelMembers.size() == 0)
+            {
+                for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
+                    if ((*it)->channelName == Chanl->channelName)
+                    {
+                        int f = it - this->servChannels.begin();
+                        this->servChannels.erase(this->servChannels.begin() + f);
+                        break ;
+                    }
+                }
+            }
+            this->sendGenericReply(Userx, "PART", Chanl);
+        }
+        else{
+            std::string *param = allocateForParams(1);
+            param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+            this->sendReply(Userx->sendFd, this->serverName, ERR_USERNOTINCHANNEL, param);
+            delete [] param;
         }
     }
 
 }
-

@@ -20,10 +20,12 @@ SRC= main.cpp\
 	parsingUtils.cpp\
 	debug.cpp\
 	globalCommands.cpp\
-	commandsPart1.cpp\
 	ircGod.cpp\
+	commandsPart1.cpp\
 	commandsPart2.cpp\
+	commandsPart3.cpp\
 	JoinAndPart.cpp \
+	AuthComands.cpp\
 
 
 NAME= ircserv
