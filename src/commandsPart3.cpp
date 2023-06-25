@@ -24,6 +24,7 @@ void    Server::handleCmdTopic(std::string *params, User *userX, int paramNumber
                 std::cout << "hna4" << std::endl;
                 if (params[2] != ""){
                     std::cout << "hna5" << std::endl;
+                    std::cout << chan->topicProtectMode << std::endl;
                     if (chan->topicProtectMode){
                         std::cout << "hna6" << std::endl;
                         if (findUserinChan(userX->sendFd, chan->channelOps) != -1){

@@ -254,14 +254,14 @@ void    Server::handleCmdModeOptT(User *userX, Channel *chan, int mode){
         this->sendReply(userX->sendFd, this->serverName, RPL_TOPIC, params);
     }
     else if (mode == 0 && chan->topicProtectMode){
-        chan->inviteMode = false;
+        chan->topicProtectMode = false;
         params = allocateForParams(2);
         params[0] = userX->getNickForReply() + " " + chan->channelName;
         params[1] = ":MODE : The Topic Protection Mode is now Off!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
     }
     else if (mode == 1 && !chan->topicProtectMode){
-        chan->inviteMode = true;
+        chan->topicProtectMode = true;
         params = allocateForParams(2);
         params[0] = userX->getNickForReply() + " " + chan->channelName;
         params[1] = ":MODE : The Topic Protection Mode is now On!";
