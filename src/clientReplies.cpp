@@ -25,7 +25,6 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 		this->lostConnection(user);
 		return;
 	}
-	std::cout << "here homie ::: " << reply << std::endl;
 	//this->lostConnection(clientFd, k);
 }
 

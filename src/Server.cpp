@@ -60,7 +60,7 @@ void    Server::createConnection()
     servSocketAddr.sin6_family = AF_INET6;
     servSocketAddr.sin6_port = htons(this->portNumber);
     socketAddrBind = reinterpret_cast<sockaddr*>(&servSocketAddr);
-    if (setsockopt(this->servSocketFd, SOL_SOCKET, SO_REUSEPORT, &fl, sizeof(int)) == -1)
+    if (setsockopt(this->servSocketFd, SOL_SOCKET, SO_REUSEADDR, &fl, sizeof(int)) == -1)
         throw errorErrno();
     if (fcntl(this->servSocketFd, F_SETFL, O_NONBLOCK) == -1)
         throw errorErrno();
@@ -218,7 +218,7 @@ void    Server::defaultChannelsAdd(User *user){
         user->nextChannel = this->servChannels[index];
         current = this->servChannels[index];
         user->defaultChannel = this->servChannels[index];
-        this->sendGenericReply(user, "JOIN", user->defaultChannel);
+        //this->sendGenericReply(user, "JOIN", user->defaultChannel);
     }
     else // add error!
         this->lostConnection(user);
