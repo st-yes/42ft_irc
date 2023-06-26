@@ -71,11 +71,13 @@ class   Server
         void    handleCmdModeOptK(User *userX, std::string s, Channel *chan, int mode);
         void    handleCmdModeOptL(User *userX, std::string s, Channel *chan, int mode);
         void    handleCmdTopic(std::string *params, User *userX, int paramNumber);
+        void    handleCmdInvite(std::string *params, User *userX, int paramNumber);
         /*-- COMMANDS PART 3--*/
         void    handleCmdJoin(std::string* str, User* Userx, int paramNumber);
         void    JoinFunc(std::map<std::string, std::string>   tmp, User *userX);
         void    handleCmdPart(std::string *s, User *userX, int paramNumber);
         void    ParsePart(std::vector<std::string> &channel,std::string* str, std::string& reason);
+        void    newChannel(std::map<std::string, std::string>::iterator p, User *userX);
     
         /*-- HELPER-FUNCTIONS --*/
             int     findUserinChan(int fd, std::vector<User *> x);
@@ -84,13 +86,16 @@ class   Server
             void    deleteFromPoll(int fd);
             Channel *channelFinder(std::string s);
             bool    channelFinder(std::string s, std::vector<Channel *> chans);
-            void    sendGenericReply(User *userX, std::string prefix, Channel *chan); 
+            void    sendGenericReply(User *userX, std::string prefix, Channel *chan, std::string s); 
             void    sendReply(int clientFd, std::string numericCode, std::string *params);
+            void    sendReply(User *userX, std::string numericCode, Channel *chan);
             void	sendStatusUpdate(int clientFd, User *userX, std::string com, std::string msg); 
             void    handleCmdRegularNick(std::string	*params, User *userX, int paramNumber);
+            void    addNewChanops(User *userX, Channel *chan);
+           // void    sendResponses(User *user, Channel *chan, std::string num, std::string s);
+           std::vector<User *>    godFinder();
         /*-------------------EXCEPTIONS------------------*/
         
-
         class errorNbArguments : public std::exception
         {
             public:

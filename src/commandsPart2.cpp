@@ -61,7 +61,7 @@ void    Server::handleCmdMode(std::string *param, User *userX, int paramNumber){
     if (param[0] == "MODE" && param[6] == "+i"){ // MODE in user mode! change the 6 to a 1
         params = allocateForParams(1);
         params[0] = "Invisible mode on!";
-        this->sendReply(userX->sendFd, this->serverName, RPL_MODE, params);
+        this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODEIS, params);
         delete [] params;
         return;
     }
@@ -160,6 +160,7 @@ void    Server::handleCmdModeOpt(std::string *params, User *userX, Channel *Ch){
 }
 
 void    Server::handleCmdModeOpt(Channel *chan, User *userX, std::map<char, std::string> opt, int mode){
+    bool    check;
     for(std::map<char, std::string>::iterator it = opt.begin(); it != opt.end(); it++){
         switch(it->first){
             case 'i' :{
@@ -218,6 +219,7 @@ void    Server::handleCmdModeOptI(User *userX, Channel *chan, int mode){
         params[0] = userX->getNickForReply() + " " + chan->channelName;
         params[1] = ":MODE : The Invite only Mode is now Off!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
+        this->sendGenericReply(userX, "MODE", chan, "-i");
     }
     else if (mode == 1 && !chan->inviteMode){
         chan->inviteMode = true;
@@ -225,6 +227,8 @@ void    Server::handleCmdModeOptI(User *userX, Channel *chan, int mode){
         params[0] = userX->getNickForReply() + " " + chan->channelName;
         params[1] = ":MODE : The Invite only Mode is now On!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
+        this->sendGenericReply(userX, "MODE", chan, "+i");
+
     }
     delete [] params;
     return ;
@@ -259,6 +263,7 @@ void    Server::handleCmdModeOptT(User *userX, Channel *chan, int mode){
         params[0] = userX->getNickForReply() + " " + chan->channelName;
         params[1] = ":MODE : The Topic Protection Mode is now Off!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
+        this->sendGenericReply(userX, "MODE", chan, "-t");
     }
     else if (mode == 1 && !chan->topicProtectMode){
         chan->topicProtectMode = true;
@@ -266,6 +271,7 @@ void    Server::handleCmdModeOptT(User *userX, Channel *chan, int mode){
         params[0] = userX->getNickForReply() + " " + chan->channelName;
         params[1] = ":MODE : The Topic Protection Mode is now On!";
         this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
+        this->sendGenericReply(userX, "MODE", chan, "+t");
     }
     delete [] params;
     return ;
@@ -338,6 +344,7 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
                 params[0] = userX->getNickForReply() + " " + chan->channelName;
                 params[1] = ":MODE :" + chan->channelName + " no longer has a password!";
                 this->sendReply(userX->sendFd, this->serverName, RPL_INVITING, params);
+                this->sendGenericReply(userX, "MODE", chan, "-k");
                 delete [] params;
                 break;
             }
@@ -348,6 +355,7 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
                 params[0] = userX->getNickForReply() + " " + chan->channelName;
                 params[1] = ":MODE :" + chan->channelName + "has a new password!";
                 this->sendReply(userX->sendFd, this->serverName, RPL_INVITING, params);
+                this->sendGenericReply(userX, "MODE", chan, "+k");
                 delete [] params;
                 break;
             }
@@ -372,6 +380,7 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
                 params[0] = userX->getNickForReply() + " " + chan->channelName;
                 params[1] = "MODE : " +chan->channelName + "has a new password!";
                 this->sendReply(userX->sendFd, this->serverName, RPL_INVITING, params);
+                this->sendGenericReply(userX, "MODE", chan, "+k");
                 delete [] params;
                 break;
             }
@@ -403,6 +412,7 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
                     params[0] = userX->getNickForReply() + " " + chan->channelName;
                     params[1] = "MODE :" + chan->channelName + " is no longer limited!";
                     this->sendReply(userX->sendFd, this->serverName, RPL_NOTOPIC, params);
+                    this->sendGenericReply(userX, "MODE", chan, "-l");
                     delete [] params;
                     break;
                 }
@@ -416,6 +426,7 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
                     params[0] = userX->getNickForReply() + " " + chan->channelName;
                     params[1] = ":MODE :" + chan->channelName + "has a new limit!"; 
                     this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
+                    this->sendGenericReply(userX, "MODE", chan, "+l");
                     delete [] params;
                     break;
                 }
@@ -443,6 +454,7 @@ void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int
                     params[0] = userX->getNickForReply() + " " + chan->channelName;
                     params[1] = "MODE" + chan->channelName + "has a new limit!";
                     this->sendReply(userX->sendFd, this->serverName, RPL_CHANNELMODES, params);
+                    this->sendGenericReply(userX, "MODE", chan, "+l");
                     delete [] params;
                     break;
                 }

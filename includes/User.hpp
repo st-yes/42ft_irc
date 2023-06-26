@@ -14,34 +14,6 @@
 
 # define SERVERNAME "BANANA"
 
-/*--- numeric reply --*/
-# define RPL_NAMREPLY           "353"
-# define RPL_MODE               "324"
-# define RPL_TOPIC              "332"
-# define RPL_WELCOME            "001"
-# define RPL_NOTOPIC            "331"
-# define RPL_INVITING           "341"
-# define RPL_YOUREOPER          "381"
-# define RPL_CHANNELMODES       "324"
-# define RPL_ENDOFBANLIST       "368"
-# define ERR_NORULES	        "434"
-# define ERR_NOPRIVILEGES       "481"
-# define ERR_NICKNAMEINUSE      "433"
-# define ERR_NICKCOLLISION      "436"
-# define ERR_NEEDMOREPARAMS     "461"
-# define ERR_INVITEONLYCHAN     "473"
-# define ERR_PASSWDMISMATCH     "464"
-# define ERR_NONICKNAMEGIVEN    "431"
-# define ERR_USERNOTINCHANNEL   "441"
-# define ERR_CHANOPPRIVNEEDED   "482"
-# define ERR_ERRONEUSNICKNAME	"432"
-# define ERR_ALREADYREGISTERED  "462"
-# define ERR_TOOMANYCHANNELS    "405"
-# define ERR_BADCHANNELKEY      "475"
-# define ERR_NOSUCHCHANNEL      "403"
-# define ERR_CHANNELISFULL      "471"
-# define ERR_NOPRIVS            "491"
-
 class Channel;
 class User{
     protected :
@@ -70,9 +42,6 @@ class User{
         virtual ~User();
         User const  &operator=(User const & s);
 
-        public :
-            void    getCommands(std::string	buffer, bool reset);
-            bool    validNick(std::string s);
     /*-----------------------------Setters------------------------------------*/
     public :
         void    setNick(std::string const s);
@@ -92,7 +61,9 @@ class User{
         std::string         getUserForReply();
         std::string         getHostForReply();
     /*-------------------------**Member-Functions----------------------------*/
-
+    public :
+        void    getCommands(std::string	buffer, bool reset);
+        bool    validNick(std::string s);
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
 
 /*-- 
 * template try out of server reply 
@@ -28,12 +28,46 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 	//this->lostConnection(clientFd, k);
 }
 
+void Server::sendReply(User *client, std::string numericCode, Channel *chan)
+{
+	std::string	reply;
+	int			i;
+
+	reply = std::string(":BANANA ") + numericCode + " " + client->getNickForReply() + "@" + client->getUsrHostName() + " " + chan->channelName + " :";
+	i = 0;
+	while (i != chan->channelMembers.size())
+	{
+		reply += " ";
+		reply += chan->channelMembers[i]->getNickForReply();
+		i++;
+	}
+	reply += ":\r\n";
+	std::cout << "[client -> server]" << reply << std::flush;
+	//correspondence(CLIENT_TO_SERVER, reply);
+	for (int i = 0; i != chan->channelMembers.size(); i++){
+		if (send(chan->channelMembers[i]->sendFd, reply.c_str(), reply.length(), 0) == -1)
+		{
+			this->lostConnection(client);
+			return ;
+		}
+	}
+	reply = std::string(":BANANA ") + RPL_ENDOFNAMES + " " + client->getNickForReply() + " " + chan->channelName + " :End of NAMES list\r\n";
+	std::cout << "----------->>>>>>>>>>>" << reply << std::endl;
+	for (int i = 0; i != chan->channelMembers.size(); i++){
+		if (send(chan->channelMembers[i]->sendFd, reply.c_str(), reply.length(), 0) == -1)
+		{
+			this->lostConnection(client);
+			return ;
+		}
+	}
+}
+
 void Server::sendReply(int clientFd, std::string numericCode, std::string *params)
 {
 	std::string	reply;
 	int			i;
 
-	reply = std::string(":banana ") +numericCode;
+	reply = std::string(":BANANA ") +numericCode;
 	i = 0;
 	while (params[i] != "")
 	{
@@ -48,14 +82,30 @@ void Server::sendReply(int clientFd, std::string numericCode, std::string *param
 		throw errorErrno(); // check for err
 }
 
-void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan){
+void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, std::string opt){
 	std::string reply;
-	reply = ":" + userX->getNickForReply() + " " + prefix + " " + chan->channelName + "\r\n";
-	//std::cout << "---->" << reply << std::endl;
+	std::string option = " " + opt;
+	if (prefix == "JOIN" || prefix == "PART")
+		reply = ":" + userX->getNickForReply() + "@" + userX->getHostForReply() + " " + prefix + " " + chan->channelName + "\r\n";
+	else if (prefix == "TOPIC")
+		reply = ":" + this->serverName + " " + prefix + " " + chan->channelName + " " + chan->channelTopic + "\r\n";
+	else if (prefix == "MODE")
+		reply = ":" + userX->getNickForReply() + " " + prefix + " " + chan->channelName + option + "\r\n";
+
+	std::cout << "---->" << reply << std::endl;
 	if (send(userX->sendFd, reply.c_str(), reply.length(), 0) == -1)
 	{
 		this->lostConnection(userX);
 		return ;
+	}
+	for (int i = 0; i != chan->channelMembers.size(); i++){
+		if (chan->channelMembers[i]->sendFd == userX->sendFd)
+			continue;
+		if (send(chan->channelMembers[i]->sendFd, reply.c_str(), reply.length(), 0) == -1)
+		{
+			this->lostConnection(userX);
+			return ;
+		}
 	}
 }
 

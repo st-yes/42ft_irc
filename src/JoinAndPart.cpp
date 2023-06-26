@@ -1,4 +1,4 @@
-# include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
 
 std::string Channel::GetThekey(){
     return this->channelKey;
@@ -11,9 +11,7 @@ int CheckChannelIFexist(std::vector<Channel*> tmp, std::map<std::string, std::st
     while(i < tmp.size())
     {
         if (tmp[i]->channelName == tmp3->first)
-        {
             return 0;
-        }
         i++;
     }
     return i;
@@ -58,19 +56,30 @@ void    Server::handleCmdJoin(std::string* str, User* Userx, int paramNumber)
             }
         }
     }
-    if (Channls.size() > 2)
+    if (Channls.size() >= 2)
     {
         std::string *param = allocateForParams(1);
-        param[0] = Userx->getNickForReply();
-        sendReply(Userx->sendFd, this->serverName, ERR_TOOMANYCHANNELS , param);
-        return ;
-    }
-    i = 0;
-    if (Channls.size() == 2){
+        for (int k = 2; k != Channls.size() ; k++){
+            param[0] = Userx->getNickForReply() + " " + Channls[k];
+            sendReply(Userx->sendFd, this->serverName, ERR_TOOMANYCHANNELS , param);
+        }
         Channels.insert(std::pair<std::string, std::string>(Channls[1], Pass[1]));
+        delete [] param;
     }
     Channels.insert(std::pair<std::string, std::string>(Channls[0], Pass[0]));
     this->JoinFunc(Channels, Userx);
+}
+
+void    Server::newChannel(std::map<std::string, std::string>::iterator p, User* Userx){
+
+    Channel   *nw;
+    nw = new Channel(p->first, "", p->second);
+    nw->channelMembers.push_back(Userx);
+    Userx->nextChannel = Userx->currentChannel;
+    Userx->currentChannel = nw;
+    this->servChannels.push_back(nw);
+    this->addNewChanops(Userx, nw);
+    this->sendGenericReply(Userx, "JOIN", nw, "");
 }
 
 void    Server::JoinFunc(std::map<std::string, std::string>   tmp, User* Userx){
@@ -84,18 +93,13 @@ void    Server::JoinFunc(std::map<std::string, std::string>   tmp, User* Userx){
         //     {std::cout<< this->users.find(i)->second->nextChannel->channelName << "   ur limit channels to join is 2\n";return;}
     
         Channel   *Chanl = this->channelFinder(p->first);
-        Channel   *nw;
+        // Channel   *nw;
         if (Chanl == NULL)
-        {
-            nw = new Channel(p->first, "", p->second);
-            nw->channelMembers.push_back(Userx);
-            Userx->nextChannel = Userx->currentChannel;
-            Userx->currentChannel = nw;
-            this->servChannels.push_back(nw);
-            nw->channelOps.push_back(Userx);
-        }
+            this->newChannel(p, Userx);
         else{
-            if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)){
+
+            if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)
+                && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
                 std::string *param = allocateForParams(1);
                 param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
                 this->sendReply(Userx->sendFd, this->serverName, ERR_INVITEONLYCHAN, param);
@@ -120,8 +124,16 @@ void    Server::JoinFunc(std::map<std::string, std::string>   tmp, User* Userx){
             Chanl->channelMembers.push_back(Userx);
             Userx->nextChannel = Userx->currentChannel;
             Userx->currentChannel = Chanl;
+            this->sendGenericReply(Userx, "JOIN", Chanl, "");
+             this->sendReply(Userx, RPL_NAMREPLY, Chanl);
+            std::vector<User *>::iterator it; // test for chanops and ircGod
+            for (it = Chanl->channelOps.begin(); it != Chanl->channelOps.end(); it++){
+                std::cout << "CHANELOPS :" << Chanl->channelOps.begin() - it << (*it)->getNick() << std::endl;
+            }
+            for (it = Chanl->channelMembers.begin(); it != Chanl->channelMembers.end(); it++){
+                std::cout << "USERS :" << Chanl->channelMembers.begin() - it << (*it)->getNick() << std::endl;
+            }
         }
-        this->sendGenericReply(Userx, "JOIN", nw);
         p++;
     }
     return ;
@@ -135,9 +147,12 @@ void    Server::ParsePart(std::vector<std::string> &channel,std::string* str, st
     if (str[2] != "")
         reason = str[2];
     tmp = str[1].substr(0, str[1].find(","));
-    tmp2 = str[1].substr(str[1].find(",") + 1);
+    str[1] = str[1].substr(tmp.size());
+    tmp2 = str[1].substr(str[1].find(',') + 1);
     channel.push_back(tmp);
-    channel.push_back(tmp2);
+    if (tmp2 != ""){
+        channel.push_back(tmp2);
+    }
 }
 
 void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
@@ -149,10 +164,10 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
 
    this->ParsePart(channel, str, reason);
     int i = 0;
-
-    for(it = channel.begin(); it != channel.end();it++){
+    
+    for(it = channel.begin(); it != channel.end();){
         Channel   *Chanl = this->channelFinder(it->c_str());
-        if (Chanl == NULL){ // please recheck this
+        if (Chanl == NULL){ // please recheck this : Done
             std::cout << "the channel not exist\n";
                 return;
         }
@@ -179,14 +194,15 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
                     }
                 }
             }
-            this->sendGenericReply(Userx, "PART", Chanl);
+            this->sendGenericReply(Userx, "PART", Chanl, "");
         }
         else{
-            std::string *param = allocateForParams(1);
-            param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
-            this->sendReply(Userx->sendFd, this->serverName, ERR_USERNOTINCHANNEL, param);
-            delete [] param;
+            // std::string *param = allocateForParams(1);
+            // param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+            // this->sendReply(Userx->sendFd, this->serverName, ERR_USERNOTINCHANNEL, param);
+            // delete [] param;
         }
+        it++;
     }
 
 }

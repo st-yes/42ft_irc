@@ -1,4 +1,4 @@
-#include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
 
 bool	Server::authenticated(int fdClient)
 {

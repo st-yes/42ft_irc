@@ -13,31 +13,27 @@ void    Server::handleCmdTopic(std::string *params, User *userX, int paramNumber
         if (!chan){
         // Err Channel doesnt exist
         param = allocateForParams(1);
-        std::cout << "hna2" << std::endl;
         param[0] = userX->getNickForReply() + " No such channel";
         this->sendReply(userX->sendFd, this->serverName, ERR_NOSUCHCHANNEL, param);
         }
     else{
-            std::cout << "hna3" << std::endl;
             int k = findUserinChan(userX->sendFd, chan->channelMembers);
             if (k != -1){
-                std::cout << "hna4" << std::endl;
                 if (params[2] != ""){
-                    std::cout << "hna5" << std::endl;
-                    std::cout << chan->topicProtectMode << std::endl;
                     if (chan->topicProtectMode){
-                        std::cout << "hna6" << std::endl;
                         if (findUserinChan(userX->sendFd, chan->channelOps) != -1){
-                            std::cout << "hna7" << std::endl;
                             // send correct answer change topic
-                            std::string topic = params[2].substr(1, params[2].length());
-                            chan->channelTopic = topic;
+                            int i = 2;
+                            while (params[i] != ""){
+                                chan->channelTopic += params[i++];
+                                chan->channelTopic += " ";
+                            }
                             param = allocateForParams(1);
                             param[0] = userX->getNickForReply() + " " + chan->channelName + " " + chan->channelTopic;
                             this->sendReply(userX->sendFd, this->serverName, RPL_TOPIC, param);
+                            this->sendGenericReply(userX, "TOPIC", chan, "");
                         }
                         else {
-                            std::cout << "hna8" << std::endl;
                             // Err is not chanop
                             param = allocateForParams(1);
                             param[0] = userX->getNickForReply() + " " + chan->channelName + " :You are not Chanop!";
@@ -45,27 +41,28 @@ void    Server::handleCmdTopic(std::string *params, User *userX, int paramNumber
                         }
                     }
                     else{
-                        std::cout << "hna9" << std::endl;
                         // Case change Topic
-                        std::string topic = params[2].substr(1, params[2].length());
-                        chan->channelTopic = topic;
+                        int i = 2;
+                        while (params[i] != ""){
+                            chan->channelTopic += params[i++];
+                            chan->channelTopic += " ";
+                        }
                         param = allocateForParams(1);
                         param[0] = userX->getNickForReply() + " " + chan->channelName + " " + chan->channelTopic;
                         this->sendReply(userX->sendFd, this->serverName, RPL_TOPIC, param);
+                        this->sendGenericReply(userX, "TOPIC", chan, "");
                     }
                 }
                 else{
-                    std::cout << "hna10" << std::endl;
                     // Case of printing topic
-                    std::cout << "hopla :" + chan->channelTopic << std::endl;
                     param = allocateForParams(1);
                     param[0] = userX->getNickForReply() + " " + chan->channelName + " " + chan->channelTopic;
                     this->sendReply(userX->sendFd, this->serverName, RPL_TOPIC, param);
+                    this->sendGenericReply(userX, "TOPIC", chan, "");
                 }
             }
             else{
-                std::cout << "hna11" << std::endl;
-                // Err User doesnt exist
+                    // Err User doesnt exist
                     param = allocateForParams(1);
                     param[0] = userX->getNickForReply() + " " + chan->channelName + " :NO TOPIC IS SET";
                     this->sendReply(userX->sendFd, this->serverName, RPL_NOTOPIC, param);

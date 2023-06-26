@@ -1,4 +1,4 @@
-#include "User.hpp"
+#include "../includes/User.hpp"
 
     User::User(){}
     User::User(std::string name, std::string nick, std::string fullName, std::string hostName) : userName(name), userNick(nick), userFullName(fullName), userHostName(hostName){

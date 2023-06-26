@@ -4,18 +4,13 @@
 #include "User.hpp"
 #include "Channel.hpp"
 #include "ircGod.hpp"
+#include "numericReplies.hpp"
 #include <iostream>
 
 # define MAX_PORT 65535
 # define MIN_PORT 1
 # define BACKLOG 10
 # define BUFFER_SIZE 512
-
-# define RPL_WELCOME "001"
-# define ERR_NEEDMOREPARAMS "461"
-# define ERR_PASSWDMISMATCH "464"
-# define ERR_NICKNAMEINUSE "433"
-# define ERR_NICKCOLLISION "436"
 
 enum	errors
 {

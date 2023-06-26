@@ -1,4 +1,4 @@
-#include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
 
 
 bool	Server::passCorrect(std::string passUser)
@@ -98,7 +98,7 @@ size_t	checkNums(std::string s){
 	if(!s.length())
 		return false;
 	for (int i = 0; i < s.length(); i++){
-		if (s.c_str()[i] < '1' || s.c_str()[i] > '9')
+		if (!isnumber(s.c_str()[i]))
 			return false;
 	}
 	return true;
@@ -108,8 +108,10 @@ Channel   *Server::channelFinder(std::string s){
     if(this->servChannels.empty())
         return NULL;
     for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
-        if ((*it)->channelName == s)
-            return (*it);
+		std::cout << (*it)->channelName << std::endl;
+        if ((*it)->channelName == s){
+			std::cout << "here!!!!!!" << std::endl;
+            return (*it);}
     }
     return NULL;
 }
@@ -136,8 +138,22 @@ std::string *getCmdParams(char *buffer, User *userX, int *paramNumber)
     return (cmdParams);
 }
 
-// void	alternatives(std::string command, std::string input)
-// {
-// 	std::string	commandUP = // all uppercase
-// 	std::string	commandlower = //all lowecase 
-// }
+std::vector<User*>		Server::godFinder(){
+	std::map<int, User *>::iterator godHunter;
+	std::vector<User*>				godStorer;
+	for (godHunter = this->users.begin(); godHunter != this->users.end(); godHunter++){
+		if(dynamic_cast<ircGod*>(godHunter->second))
+			godStorer.push_back(godHunter->second);
+	}
+	return godStorer;
+}
+
+void    Server::addNewChanops(User *userX, Channel *Chan){
+    std::vector<User*> godsVec = godFinder();
+	std::vector<User*>::iterator	it;
+	for (it = godsVec.begin(); it != godsVec.end(); it++){
+		Chan->channelOps.push_back((*it));
+	}
+	Chan->channelOps.push_back(userX);
+	return;
+}

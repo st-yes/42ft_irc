@@ -1,4 +1,4 @@
-#include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
 
 
 void Server::handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumber)
@@ -27,7 +27,8 @@ void Server::handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumbe
 		this->handleCmdPing(cmdParams, UserX, paramNumber);
 	else if (cmdParams[0] == "NICK"|| cmdParams[0] == "nick")
 		this->handleCmdRegularNick(cmdParams, UserX, paramNumber);
-	//else if (cmdParams[0] == "INVITE" || cmdParams[0] == "invite")
-	//	this->handleCmdInvite(cmdParams, UserX, paramNumber);
+	// else if (cmdParams[0] == "INVITE" || cmdParams[0] == "invite")
+	// 	this->handleCmdInvite(cmdParams, UserX, paramNumber);
+	
 }
 

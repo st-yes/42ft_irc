@@ -1,9 +1,7 @@
-# include "Ft_irc.hpp"
+# include "../includes/Ft_irc.hpp"
 
 Server::Server(){}
-// Server::Server(int s, std::string p) : serverName("Banana kat3oum"), numberOfCli(0), passWord(p), portNumber(s){
-//     //std::cout <<  serverName + " is up! :)" << std::endl;
-// }
+
 Server::Server(int ac, char **av)
 {
     if (ac != 3)
@@ -32,10 +30,7 @@ Server::Server(Server const &p)
     this->portNumber = p.portNumber;
     this->users  = p.users;
 }
-Server::~Server()
-{
-    //std::cout << "The server is down! :c" << std::endl;
-}
+Server::~Server(){}
 
 Server  const &Server::operator=(Server const &p){
     *this = p;
@@ -121,13 +116,13 @@ void    Server::nConnection()
     newU->sendFd = clientSocket;
     newU->currentChannel = NULL;
     newU->nextChannel = NULL;
-    User *a = new User;
-    User *b = new User;
-    a->setNick("styes");
-    b->setNick("styes_");
+    // User *a = new User;
+    // User *b = new User;
+    // a->setNick("styes");
+    // b->setNick("styes_");
     this->users.insert(std::make_pair(clientSocket, newU));
-    this->users.insert(std::make_pair(7, a));
-    this->users.insert(std::make_pair(8, b));
+    // this->users.insert(std::make_pair(7, a));
+    // this->users.insert(std::make_pair(8, b));
     Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }

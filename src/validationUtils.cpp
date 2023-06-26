@@ -1,4 +1,4 @@
-#include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
 
 /*-- check if port number is valid --*/
 bool	validPort(std::string s)
