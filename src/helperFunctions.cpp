@@ -109,9 +109,8 @@ Channel   *Server::channelFinder(std::string s){
         return NULL;
     for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
 		std::cout << (*it)->channelName << std::endl;
-        if ((*it)->channelName == s){
-			std::cout << "here!!!!!!" << std::endl;
-            return (*it);}
+        if ((*it)->channelName == s)
+            return (*it);
     }
     return NULL;
 }

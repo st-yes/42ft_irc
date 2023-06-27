@@ -64,6 +64,7 @@ void Server::handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNum
 	first = true;
 	if (DEBUG)
 	{
+		std::cout << "NC = " << UserX->nc << std::endl;
 		std::cout << "COMMAND = " << cmdParams[0] << std::endl;
 		std::cout << "PARAMS = " << std::flush;
 		printParams(cmdParams);

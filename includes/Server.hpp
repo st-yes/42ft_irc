@@ -94,6 +94,8 @@ class   Server
             void    addNewChanops(User *userX, Channel *chan);
            // void    sendResponses(User *user, Channel *chan, std::string num, std::string s);
            std::vector<User *>    godFinder();
+           void     handleCmdMsg(std::string	*params, User *userX ,int paramNumber);
+           int      findClient(std::string	nick);
         /*-------------------EXCEPTIONS------------------*/
         
         class errorNbArguments : public std::exception

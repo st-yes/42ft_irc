@@ -64,7 +64,7 @@
 
 bool    User::validNick(std::string nick)
 {
-    if (nick[0] == '#' || nick[0] == '"')
+    if (nick[0] == '#' || nick[0] == '"' || nick.find(",") != std::string::npos)
         return (false);
     return (true);
 }
@@ -89,4 +89,13 @@ std::string	User::getHostForReply()
 		return ("*");
 	else
 		return (this->userHostName);
+}
+
+void    User::setNc(char *buffer)
+{
+    std::string buff(buffer);
+
+    std::size_t pos = buff.find("\r\n");
+    if (pos == std::string::npos)
+        this->nc = true;
 }

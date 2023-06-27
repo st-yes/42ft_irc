@@ -63,6 +63,8 @@ void    Server::handleCmdJoin(std::string* str, User* Userx, int paramNumber)
             param[0] = Userx->getNickForReply() + " " + Channls[k];
             sendReply(Userx->sendFd, this->serverName, ERR_TOOMANYCHANNELS , param);
         }
+        if (Pass.size() == 1 )
+            Pass.push_back("");
         Channels.insert(std::pair<std::string, std::string>(Channls[1], Pass[1]));
         delete [] param;
     }

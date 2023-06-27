@@ -35,6 +35,7 @@ class User{
         std::vector<std::string>    commandFull;
         bool                        passSet;
         bool                        nickSet;
+        bool                        nc;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);
@@ -64,6 +65,7 @@ class User{
     public :
         void    getCommands(std::string	buffer, bool reset);
         bool    validNick(std::string s);
+        void    setNc(char *buffer);
 };
 
 #endif

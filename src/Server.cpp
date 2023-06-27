@@ -120,9 +120,9 @@ void    Server::nConnection()
     // User *b = new User;
     // a->setNick("styes");
     // b->setNick("styes_");
-    this->users.insert(std::make_pair(clientSocket, newU));
     // this->users.insert(std::make_pair(7, a));
-    // this->users.insert(std::make_pair(8, b));
+    // this->users.insert(std::make_pair(8, b)); 
+    this->users.insert(std::make_pair(clientSocket, newU));
     Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }
@@ -150,6 +150,7 @@ void    Server::oConnection(int i)
             std::cout << buffer;
             std::cout << "--------"<< std::endl;
         }
+        currentUser->setNc(buffer);
         if (currentUser->userAuthentified == false)
         {
                 std::cout << "----- First connection -----" << std::endl;
