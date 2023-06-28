@@ -77,6 +77,8 @@ class   Server
         void    JoinFunc(std::map<std::string, std::string>   tmp, User *userX);
         void    handleCmdPart(std::string *s, User *userX, int paramNumber);
         void    ParsePart(std::vector<std::string> &channel,std::string* str, std::string& reason);
+       // void    handleCmdKick(std::string *s, User *userX, int paramNumber);
+      //  void    handleCmdInvite(std::string *s, User *userX, int paramNumber);
         void    newChannel(std::map<std::string, std::string>::iterator p, User *userX);
     
         /*-- HELPER-FUNCTIONS --*/

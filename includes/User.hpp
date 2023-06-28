@@ -23,7 +23,7 @@ class User{
         std::string userFullName;
         std::string userPass;
     public :
-        int                        userAuthentified;
+        int                         userAuthentified;
         int                         sendFd;
         int                         primer;
         Channel                     *currentChannel;

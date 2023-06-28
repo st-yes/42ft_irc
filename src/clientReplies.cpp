@@ -88,9 +88,9 @@ void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, st
 	if (prefix == "JOIN" || prefix == "PART")
 		reply = ":" + userX->getNickForReply() + "@" + userX->getHostForReply() + " " + prefix + " " + chan->channelName + "\r\n";
 	else if (prefix == "TOPIC")
-		reply = ":" + this->serverName + " " + prefix + " " + chan->channelName + " " + chan->channelTopic + "\r\n";
+		reply = ":" + userX->getNickForReply() + " " + prefix + " " + chan->channelName + " " + chan->channelTopic + "\r\n";
 	else if (prefix == "MODE")
-		reply = ":" + userX->getNickForReply() + " " + prefix + " " + chan->channelName + option + "\r\n";
+		reply = ":" + userX->getNickForReply() + "@" + userX->getHostForReply() + " " + prefix + " " + chan->channelName + option + "\r\n";
 
 	std::cout << "---->" << reply << std::endl;
 	if (send(userX->sendFd, reply.c_str(), reply.length(), 0) == -1)
@@ -107,6 +107,7 @@ void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, st
 			return ;
 		}
 	}
+	std::cout << "Whats up ::: " << reply << std::endl;
 }
 
 /* connection established */
