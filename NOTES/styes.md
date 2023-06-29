@@ -32,3 +32,7 @@ a message contains at least 2 part: command + first parameter, separated by a si
 	USER <username> <hostname> <servername> <realname>
 - [RFC2812]  
 	USER <user> <mode> <unused> <realname>
+
+
+#### notes on privmsg
+if client is banned: cannot send privmsg

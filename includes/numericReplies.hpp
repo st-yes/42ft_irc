@@ -38,3 +38,5 @@
 # define RPL_NAMREPLY               "353"
 # define RPL_ENDOFNAMES             "366"
 # define ERR_NOSUCHNICK				"401"
+# define ERR_CANNOTSENDTOCHAN 		"404"
+# define ERR_NORECIPIENT 			"411" 

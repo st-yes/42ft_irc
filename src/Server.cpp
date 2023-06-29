@@ -127,17 +127,83 @@ void    Server::nConnection()
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }
 
+bool    Finished(std::string cmd)
+{
+    if (cmd.find("\n") != std::string::npos)
+        return (true);
+    return (false);
+}
+// void    Server::oConnection(int i)
+// {
+//     int             receivedBytes;
+//     char            buffer[BUFFER_SIZE];
+//     User            *currentUser = this->users.find(this->pollers[i].fd)->second;
+//     int             paramNumber;
+//     std::string     fullCommand;
+    
+//     std::memset(buffer, 0, sizeof(buffer));
+//     while (!Finished(fullCommand))
+//     {
+//         /* code */
+//         receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
+//         if (receivedBytes == 0)
+//         {
+//             std::cout <<"malk" <<std::endl;
+//             //lostConnection(currentUser);
+
+//             //eturn;
+//         }
+//         buffer[receivedBytes] = '\0';
+//         fullCommand += std::string(buffer);
+//     }
+//     //buffer[receivedBytes] = '\0';
+//     if (DEBUG)
+//     {
+//         std::cout << "--------"<< std::endl;
+//         std::cout << buffer;
+//         std::cout << "--------"<< std::endl;
+//     }
+//     currentUser->setNc(fullCommand);
+//     if (currentUser->userAuthentified == false)
+//     {
+//             std::cout << "----- First connection -----" << std::endl;
+//             this->firstConnection(i, fullCommand, currentUser); //first connection?
+//             fullCommand = "";
+//     }
+//     else if (currentUser->userAuthentified == true)
+//         {
+//             std::cout << "----- Regular connection -----" << std::endl;
+//             this->regularConnection(fullCommand, currentUser);
+//              fullCommand = "";
+//         }
+//     else if (currentUser->userAuthentified == NICK_AGAIN)
+//     {
+//         std::string *cmdParams = getCmdParams(fullCommand, currentUser, &paramNumber);
+
+//         if (cmdParams[0] == "NICK" || cmdParams[0] == "nick")
+//             this->handleCmdNickAgain(currentUser->sendFd, cmdParams, currentUser, paramNumber);
+//         else if (cmdParams[0] == "USER" || cmdParams[0] =="user")
+//         {
+//             currentUser->primer *= 7;
+//             this->handleCmdUser(cmdParams,currentUser, paramNumber);
+//         }
+//          fullCommand = "";
+//     }
+//     return ;
+// }
 void    Server::oConnection(int i)
 {
     int             receivedBytes;
     char            buffer[BUFFER_SIZE];
     User            *currentUser = this->users.find(this->pollers[i].fd)->second;
     int             paramNumber;
+   static std::string     cmd;
     
     std::memset(buffer, 0, sizeof(buffer));
     receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
     if (receivedBytes == -1 || receivedBytes == 0)
     {
+        cmd = "";
         lostConnection(currentUser);
         return;
     }
@@ -151,19 +217,26 @@ void    Server::oConnection(int i)
             std::cout << "--------"<< std::endl;
         }
         currentUser->setNc(buffer);
-        if (currentUser->userAuthentified == false)
+        
+        cmd += buffer;
+        std::cout <<"cmd = " << cmd <<std::endl;
+        if (cmd.find("\n") == std::string::npos)
+           ;
+        else if (currentUser->userAuthentified == false)
         {
                 std::cout << "----- First connection -----" << std::endl;
-                this->firstConnection(i, buffer, currentUser); //first connection?
+                this->firstConnection(i, cmd, currentUser); //first connection?
+                cmd = "";
         }
         else if (currentUser->userAuthentified == true)
            {
                 std::cout << "----- Regular connection -----" << std::endl;
-                this->regularConnection(buffer, currentUser);
+                this->regularConnection(cmd, currentUser);
+                 cmd = "";
            }
         else if (currentUser->userAuthentified == NICK_AGAIN)
         {
-            std::string *cmdParams = getCmdParams(buffer, currentUser, &paramNumber);
+            std::string *cmdParams = getCmdParams(cmd, currentUser, &paramNumber);
 
             if (cmdParams[0] == "NICK" || cmdParams[0] == "nick")
                 this->handleCmdNickAgain(currentUser->sendFd, cmdParams, currentUser, paramNumber);
@@ -172,11 +245,11 @@ void    Server::oConnection(int i)
                 currentUser->primer *= 7;
                 this->handleCmdUser(cmdParams,currentUser, paramNumber);
             }
+             cmd = "";
         }
     }
     return ;
 }
-
 void    Server::regularConnection(std::string buffer, User *UserX)
 {
     int		size;
@@ -226,6 +299,5 @@ void    Server::defaultChannelsAdd(User *user)
     }
     else // add error!
         this->lostConnection(user);
-    //this->sendWelcome(user, current);
     return ;
 }

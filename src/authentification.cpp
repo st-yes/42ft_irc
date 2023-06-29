@@ -13,14 +13,14 @@ bool	Server::authenticated(int fdClient)
 	return (false);                                                                                                                                                                                                                                                                                                                                                                            
 }
 
-void    Server::firstConnection(int i, char *buffer, User *UserX)
+void    Server::firstConnection(int i, std::string buffer, User *UserX)
 {
 	int				size;
 	int				paramNumber;
 	std::string		*cmdParams;
 	
-	std::string buff(buffer);
-	UserX->getCommands(buff, true);
+	//std::string buff(buffer);
+	UserX->getCommands(buffer, true);
 	size = UserX->commandFull.size();
 	cmdParams = NULL;
 	for (size_t j = 0; j < size; j++)

@@ -28,9 +28,9 @@ void Server::handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumbe
 	else if (cmdParams[0] == "NICK"|| cmdParams[0] == "nick")
 		this->handleCmdRegularNick(cmdParams, UserX, paramNumber);
 	else if(cmdParams[0] == "PRIVMSG" || cmdParams[0] == "privmsg" )
-		this->handleCmdMsg(cmdParams, UserX, paramNumber);
-	// else if (cmdParams[0] == "INVITE" || cmdParams[0] == "invite")
-	// 	this->handleCmdInvite(cmdParams, UserX, paramNumber);
+		this->handleCmdMsg(cmdParams, UserX, paramNumber, PRIVMSG);
+	 else if (cmdParams[0] == "NOTICE" || cmdParams[0] == "notice")
+		this->handleCmdMsg(cmdParams, UserX, paramNumber, NOTICE);
 	
 }
 

@@ -91,11 +91,11 @@ std::string	User::getHostForReply()
 		return (this->userHostName);
 }
 
-void    User::setNc(char *buffer)
+void    User::setNc(std::string buffer)
 {
-    std::string buff(buffer);
+    // std::string buff(buffer);
 
-    std::size_t pos = buff.find("\r\n");
+    std::size_t pos = buffer.find("\r\n");
     if (pos == std::string::npos)
         this->nc = true;
 }

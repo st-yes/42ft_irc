@@ -6,11 +6,15 @@
 #include "ircGod.hpp"
 #include "numericReplies.hpp"
 #include <iostream>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 
 # define MAX_PORT 65535
 # define MIN_PORT 1
 # define BACKLOG 10
-# define BUFFER_SIZE 512
+# define BUFFER_SIZE 5120
 
 enum	errors
 {
@@ -24,7 +28,10 @@ enum	commands
 {
 	PASS,
 	NICK,
-	USER
+	USER,
+	PRIVMSG,
+	NOTICE,
+	QUIT
 };
 
 enum flags
@@ -55,7 +62,7 @@ std::string		*fillParams(std::string cmd, int size);
 bool			isAllSpace(std::string	str);
 std::string		*allocateForParams(int size);
 std::string		assembleParmsIntoToken(std::string * params);
-std::string *getCmdParams(char *buffer, User *userX, int *paramNumber);
+std::string 	*getCmdParams(std::string	buffer, User *userX, int *paramNumber);
 
 /*---- DEBUG ----*/
 void	printParams(std::string *params);

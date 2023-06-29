@@ -9,7 +9,7 @@
 # define MAX_PORT 65535
 # define MIN_PORT 1
 # define BACKLOG 10
-# define BUFFER_SIZE 512
+//# define BUFFER_SIZE 512
 # define DEBUG 1
 
 # define SERVERNAME "BANANA"
@@ -65,7 +65,7 @@ class User{
     public :
         void    getCommands(std::string	buffer, bool reset);
         bool    validNick(std::string s);
-        void    setNc(char *buffer);
+        void    setNc(std::string buffer);
 };
 
 #endif
