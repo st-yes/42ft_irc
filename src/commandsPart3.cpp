@@ -23,7 +23,8 @@ void    Server::handleCmdTopic(std::string *params, User *userX, int paramNumber
                     if (chan->topicProtectMode){
                         if (findUserinChan(userX->sendFd, chan->channelOps) != -1){
                             // send correct answer change topic
-                            int i = 2;
+                            chan->channelTopic = params[2];
+                            int i = 3;
                             while (params[i] != ""){
                                 chan->channelTopic += params[i++];
                                 chan->channelTopic += " ";
@@ -37,12 +38,13 @@ void    Server::handleCmdTopic(std::string *params, User *userX, int paramNumber
                             // Err is not chanop
                             param = allocateForParams(1);
                             param[0] = userX->getNickForReply() + " " + chan->channelName + " :You are not Chanop!";
-                            this->sendReply(userX->sendFd, this->serverName, ERR_CHANOPPRIVNEEDED, param);
+                            this->sendReply(userX->sendFd, this->serverName, ERR_CHANOPRIVSNEEDED, param);
                         }
                     }
                     else{
                         // Case change Topic
-                        int i = 2;
+                        chan->channelTopic = params[2];
+                        int i = 3;
                         while (params[i] != ""){
                             chan->channelTopic += params[i++];
                             chan->channelTopic += " ";

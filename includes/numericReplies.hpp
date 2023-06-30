@@ -15,7 +15,7 @@
 # define ERR_INVITEONLYCHAN         "473" // JOIN When channel has invite Mode on
 # define ERR_NONICKNAMEGIVEN        "431" // NICK when Nickname isnt provided
 # define ERR_USERNOTINCHANNEL       "441" // KICK when trying to kick a user who isnt in channel 
-# define ERR_CHANOPPRIVNEEDED       "482" // Returned by commands that need special ChanOp prevs :: KICK,INVITE,MODE,TOPIC
+# define ERR_CHANOPRIVSNEEDED       "482" // Returned by commands that need special ChanOp prevs :: KICK,INVITE,MODE,TOPIC
 # define EERR_ERRONEUSNICKNAME	    "432" // NICK : Invalid NickName
 # define ERR_ALREADYREGISTERED      "462" // 
 # define ERR_TOOMANYCHANNELS        "405" // JOIN & PART when a user wants to access multiple channels
@@ -37,3 +37,4 @@
 # define RPL_CHANNELMODEIS          "324"
 # define RPL_NAMREPLY               "353"
 # define RPL_ENDOFNAMES             "366"
+# define ERR_NOSUCHNICK				"401"

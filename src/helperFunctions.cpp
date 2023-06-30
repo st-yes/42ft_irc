@@ -109,9 +109,8 @@ Channel   *Server::channelFinder(std::string s){
         return NULL;
     for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
 		std::cout << (*it)->channelName << std::endl;
-        if ((*it)->channelName == s){
-			std::cout << "here!!!!!!" << std::endl;
-            return (*it);}
+        if ((*it)->channelName == s)
+            return (*it);
     }
     return NULL;
 }
@@ -124,6 +123,16 @@ bool   Server::channelFinder(std::string s, std::vector<Channel *> chan){
             return true;
     }
     return false;
+}
+
+int Server::channelFinder2(std::string s, std::vector<Channel *> chan){
+	if (chan.empty())
+		return -1;
+    for (int it = 0; it != chan.size(); it++){
+        if ((chan[it]->channelName == s))
+            return it;
+    }
+    return -1;
 }
 
 std::string *getCmdParams(char *buffer, User *userX, int *paramNumber)
@@ -156,4 +165,12 @@ void    Server::addNewChanops(User *userX, Channel *Chan){
 	}
 	Chan->channelOps.push_back(userX);
 	return;
+}
+
+Channel *User::channelFinderinUser(std::string s){
+	for (int i = 0; i != this->joinedChannels.size(); i++){
+		if (this->joinedChannels[i]->channelName == s)
+			return this->joinedChannels[i];
+	}
+	return NULL;
 }

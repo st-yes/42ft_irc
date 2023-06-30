@@ -26,15 +26,15 @@ class User{
         int                         userAuthentified;
         int                         sendFd;
         int                         primer;
-        Channel                     *currentChannel;
-        Channel                     *nextChannel;
         Channel                     *defaultChannel;
         std::string                 serverName;
         std::string                 oldNick;
         std::vector<Channel *>      invitedChannels;
+        std::vector<Channel *>      joinedChannels;
         std::vector<std::string>    commandFull;
         bool                        passSet;
         bool                        nickSet;
+        bool                        nc;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);
@@ -64,6 +64,8 @@ class User{
     public :
         void    getCommands(std::string	buffer, bool reset);
         bool    validNick(std::string s);
+        void    setNc(char *buffer);
+        Channel *channelFinderinUser(std::string s);
 };
 
 #endif

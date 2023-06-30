@@ -42,18 +42,18 @@ Server  const &Server::operator=(Server const &p){
 */
 void    Server::createConnection()
 {
-    sockaddr_in6    servSocketAddr;
+    sockaddr_in    servSocketAddr;
     sockaddr        *socketAddrBind;
     sockaddr        *cliAddrBind;
     pollfd          serverPoll;
     int             fl = 1;
 
-    this->servSocketFd = socket(AF_INET6, SOCK_STREAM, 0);
+    this->servSocketFd = socket(AF_INET, SOCK_STREAM, 0);
     if (this->servSocketFd == -1)
         throw errorErrno();
     memset(&servSocketAddr, 0, sizeof(servSocketAddr));
-    servSocketAddr.sin6_family = AF_INET6;
-    servSocketAddr.sin6_port = htons(this->portNumber);
+    servSocketAddr.sin_family = AF_INET;
+    servSocketAddr.sin_port = htons(this->portNumber);
     socketAddrBind = reinterpret_cast<sockaddr*>(&servSocketAddr);
     if (setsockopt(this->servSocketFd, SOL_SOCKET, SO_REUSEADDR, &fl, sizeof(int)) == -1)
         throw errorErrno();
@@ -91,7 +91,7 @@ void    Server::Authentication()
 
 void    Server::nConnection()
 {
-    sockaddr_in6    clientSocketAddr;
+    sockaddr_in    clientSocketAddr;
     socklen_t       clientSocketSize = sizeof(clientSocketAddr);
     sockaddr        *cliAddrBind;
     pollfd          pollCli;
@@ -114,15 +114,13 @@ void    Server::nConnection()
     newU->primer = 1;
     newU->passSet = false;
     newU->sendFd = clientSocket;
-    newU->currentChannel = NULL;
-    newU->nextChannel = NULL;
     // User *a = new User;
     // User *b = new User;
     // a->setNick("styes");
     // b->setNick("styes_");
-    this->users.insert(std::make_pair(clientSocket, newU));
     // this->users.insert(std::make_pair(7, a));
-    // this->users.insert(std::make_pair(8, b));
+    // this->users.insert(std::make_pair(8, b)); 
+    this->users.insert(std::make_pair(clientSocket, newU));
     Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }
@@ -150,6 +148,7 @@ void    Server::oConnection(int i)
             std::cout << buffer;
             std::cout << "--------"<< std::endl;
         }
+        currentUser->setNc(buffer);
         if (currentUser->userAuthentified == false)
         {
                 std::cout << "----- First connection -----" << std::endl;
@@ -211,17 +210,13 @@ void    Server::lostConnection(User *user)
 
 void    Server::defaultChannelsAdd(User *user)
 {
-    std::vector<Channel *>::iterator    it;
     Channel                             *current;
-    int                                 index;
-    index = channelFinder("Lobby!", this->servChannels);
-    if (index != servChannels.size() && index != -1){
-        this->servChannels[index]->channelMembers.push_back(user);
-        user->currentChannel = this->servChannels[index];
-        user->nextChannel = this->servChannels[index];
-        current = this->servChannels[index];
-        user->defaultChannel = this->servChannels[index];
-        //this->sendGenericReply(user, "JOIN", user->defaultChannel);
+    current = channelFinder("#Lobby!");
+    if (current){
+        current->channelMembers.push_back(user);
+        user->joinedChannels.push_back(current);
+        user->defaultChannel = current;
+        this->sendGenericReply(user, "JOIN", user->defaultChannel, "You joined the default channel, welcome!");
     }
     else // add error!
         this->lostConnection(user);

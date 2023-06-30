@@ -9,7 +9,7 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <unistd.h>
-# include <map>
+# include <unordered_map>
 # include <vector>
 # include <poll.h>
 # include <fcntl.h>
@@ -71,31 +71,36 @@ class   Server
         void    handleCmdModeOptK(User *userX, std::string s, Channel *chan, int mode);
         void    handleCmdModeOptL(User *userX, std::string s, Channel *chan, int mode);
         void    handleCmdTopic(std::string *params, User *userX, int paramNumber);
-        void    handleCmdInvite(std::string *params, User *userX, int paramNumber);
         /*-- COMMANDS PART 3--*/
-        void    handleCmdJoin(std::string* str, User* Userx, int paramNumber);
-        void    JoinFunc(std::map<std::string, std::string>   tmp, User *userX);
-        void    handleCmdPart(std::string *s, User *userX, int paramNumber);
-        void    ParsePart(std::vector<std::string> &channel,std::string* str, std::string& reason);
-       // void    handleCmdKick(std::string *s, User *userX, int paramNumber);
-      //  void    handleCmdInvite(std::string *s, User *userX, int paramNumber);
-        void    newChannel(std::map<std::string, std::string>::iterator p, User *userX);
+        void        handleCmdJoin(std::string* str, User* Userx, int paramNumber);
+        bool        syntaxCheck(char *p);
+        void        JoinFunc(std::unordered_map<std::string, std::string>   tmp, User *userX);
+        void        handleCmdPart(std::string *s, User *userX, int paramNumber);
+        void        ParsePart(std::vector<std::string> &channel,std::string* str, std::string& reason);
+        void        handleCmdKick(std::string *s, User *userX, int paramNumber);
+        void        handleCmdInvite(std::string *params, User *userX, int paramNumber);
+        void        newChannel(std::unordered_map<std::string, std::string>::iterator p, User *userX);
+        std::string getChannelPriv(std::string s);
     
         /*-- HELPER-FUNCTIONS --*/
-            int     findUserinChan(int fd, std::vector<User *> x);
-            User    *findUserinServ(std::string name);
-            User    *findUserinServ(int fd);
-            void    deleteFromPoll(int fd);
-            Channel *channelFinder(std::string s);
-            bool    channelFinder(std::string s, std::vector<Channel *> chans);
-            void    sendGenericReply(User *userX, std::string prefix, Channel *chan, std::string s); 
-            void    sendReply(int clientFd, std::string numericCode, std::string *params);
-            void    sendReply(User *userX, std::string numericCode, Channel *chan);
-            void	sendStatusUpdate(int clientFd, User *userX, std::string com, std::string msg); 
-            void    handleCmdRegularNick(std::string	*params, User *userX, int paramNumber);
-            void    addNewChanops(User *userX, Channel *chan);
+            int                     findUserinChan(int fd, std::vector<User *> x);
+            User                    *findUserinServ(std::string name);
+            User                    *findUserinServ(int fd);
+            void                    deleteFromPoll(int fd);
+            Channel                 *channelFinder(std::string s);
+            bool                    channelFinder(std::string s, std::vector<Channel *> chans);
+            int                     channelFinder2(std::string s, std::vector<Channel*> chan);
+            void                    sendGenericReply(User *userX, std::string prefix, Channel *chan, std::string s); 
+            void                    sendReply(int clientFd, std::string numericCode, std::string *params);
+            void                    sendReplyNames(User *userX, std::string numericCode, Channel *chan);
+            void	                sendStatusUpdate(int clientFd, User *userX, std::string com, std::string msg); 
+            void                    handleCmdRegularNick(std::string	*params, User *userX, int paramNumber);
+            void                    addNewChanops(User *userX, Channel *chan);
            // void    sendResponses(User *user, Channel *chan, std::string num, std::string s);
-           std::vector<User *>    godFinder();
+           std::vector<User *>      godFinder();
+           void                     handleCmdMsg(std::string	*params, User *userX ,int paramNumber);
+           int                      findClient(std::string	nick);
+           std::vector<std::string> divideAndConquer(std::string s, User *userX);
         /*-------------------EXCEPTIONS------------------*/
         
         class errorNbArguments : public std::exception

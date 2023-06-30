@@ -25,9 +25,10 @@ Channel const &Channel::operator=(Channel const &s){
     return *this;
 }
 int    Channel::findUserinChannel(int fd){
-    if(this->channelMembers.empty())
+    if (this->channelMembers.empty())
     {
-        return -1;}
+        return -1;
+    }
     for(std::vector<User*>::iterator it = this->channelMembers.begin() ; it != this->channelMembers.end(); it++){
 
         if (*it && (*it)->sendFd == fd){
