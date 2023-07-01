@@ -35,22 +35,23 @@ std::vector<std::string>    Server::divideAndConquer(std::string s, User *userX)
     std::vector<std::string> store;
     char                     *p = NULL;
     char                     *hold = const_cast<char*>(s.c_str());
-    std::string              *params;
-    std::cout << "hnaaa ::::" << s << std::endl;
-    std::cout << "what ::: " << hold << std::endl;
+    std::vector<User *>      send;
+    send.push_back(userX);
+   // std::string              *params;
+
     if(s.empty())
         return store;
     if (s.find(',') != std::string::npos){
         p = strtok(hold, ",");
         while (p != NULL){
-            std::cout << "le bananeur :" << p << std::endl;
             if (!syntaxCheck(p))
                 store.push_back(p);
             else{
-                params = allocateForParams(1);
-                params[0] = userX->getNickForReply() + " " + std::string (p);
-                this->sendReply(userX->sendFd, this->serverName, ERR_NOSUCHCHANNEL, params);
-                delete [] params;
+                // params = allocateForParams(1);
+                // params[0] = userX->getNickForReply() + " " + std::string (p);
+                // this->sendReply(userX->sendFd, this->serverName, ERR_NOSUCHCHANNEL, params);
+                // delete [] params;
+                this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist : " + std::string(p)), send);
                 return store;
             }
             for (int i = 0; i != store.size(); i++)
@@ -63,10 +64,11 @@ std::vector<std::string>    Server::divideAndConquer(std::string s, User *userX)
             store.push_back(s);
         }
         else{
-            params = allocateForParams(1);
-            params[0] = userX->getNickForReply() + " " + std::string (p);
-            this->sendReply(userX->sendFd, this->serverName, ERR_NOSUCHCHANNEL, params);
-            delete [] params;
+            // params = allocateForParams(1);
+            // params[0] = userX->getNickForReply() + " " + std::string (p);
+            // this->sendReply(userX->sendFd, this->serverName, ERR_NOSUCHCHANNEL, params);
+            // delete [] params;
+            this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist : " + std::string(p)), send);
             return store;
         }
     }
@@ -78,12 +80,15 @@ void    Server::handleCmdJoin(std::string *s, User *userX, int paramNum){
     bool                                check;
     std::vector<std::string>            chanStore;
     std::vector<std::string>            passStore;
-    std::string                         *params;
+    std::vector<User *>                 send;
+    send.push_back(userX);
+    //std::string                         *params;
 
-    params = allocateForParams(1);
+    //params = allocateForParams(1);
     if (paramNum > 3){
-        params[0] =  userX->getNickForReply();
-        sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , params);
+        // params[0] =  userX->getNickForReply();
+        // sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , params);
+        this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Syntax Error!"), send);
     }
     chanStore = divideAndConquer(s[1], userX);
     if (!s[2].empty())
@@ -91,12 +96,10 @@ void    Server::handleCmdJoin(std::string *s, User *userX, int paramNum){
     else
         passStore.push_back("");
     if (chanStore.size() == 0 || passStore.size() == 0 ||chanStore.size() != passStore.size()){
-        params[0] =  userX->getNickForReply();
-        sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , params);
+        this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Syntax Error!"), send);
     }
     for (int i = 0; i != chanStore.size(); i++)
         channels.insert(std::make_pair(chanStore[i], passStore[i]));
-    delete [] params;
     this->JoinFunc(channels, userX);
     return;
 }
@@ -195,12 +198,20 @@ void    Server::newChannel(std::unordered_map<std::string, std::string>::iterato
         nw->keyMode = true;
         nw->setTheKey(p->second);
     }
-    this->sendGenericReply(Userx, "JOIN", nw, "");
-    this->sendReplyNames(Userx, RPL_NAMREPLY, nw);
+    // this->sendGenericReply(Userx, "JOIN", nw, "");
+    // this->sendReplyNames(Userx, RPL_NAMREPLY, nw);
+    std::vector<User *>send;
+    send.push_back(Userx);
+    this->sendHermes(this->sendGenericCode(Userx, nw, "JOIN", ""), send);
+    this->sendHermes(this->sendNumericCode(Userx, nw, RPL_NAMREPLY, ""), send);
+    this->sendHermes(this->sendNumericCode(Userx, nw, RPL_ENDOFNAMES, ""), send);
+
 }
 
 void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, User* Userx){
     int channelCreation = 0;
+    std::vector<User *>send;
+    send.push_back(Userx);
     /* !!!! if the channel is private he need invitation!!!! === */
     std::unordered_map<std::string, std::string>::iterator p = tmp.begin();
     std::cout << tmp.size() << std::endl;
@@ -219,43 +230,50 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
             channelCreation++;
         }
         else if (Chanl == NULL && channelCreation >= 2){
-            std::string *param = allocateForParams(1);
-            param[0] =  Userx->getNickForReply() + " " + std::string (p->first);            
-            sendReply(Userx->sendFd, this->serverName, ERR_TOOMANYCHANNELS , param);
-            delete [] param;
+            // std::string *param = allocateForParams(1);
+            // param[0] =  Userx->getNickForReply() + " " + std::string (p->first);            
+            // sendReply(Userx->sendFd, this->serverName, ERR_TOOMANYCHANNELS , param);
+            // delete [] param;
+            this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_TOOMANYCHANNELS, ""), send);
         }
         else{
             if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)
                 && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
-                std::string *param = allocateForParams(1);
-                param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
-                this->sendReply(Userx->sendFd, this->serverName, ERR_INVITEONLYCHAN, param);
-                delete [] param;
+                // std::string *param = allocateForParams(1);
+                // param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+                // this->sendReply(Userx->sendFd, this->serverName, ERR_INVITEONLYCHAN, param);
+                // delete [] param;
+                this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_INVITEONLYCHAN, ""), send);
             }
             else if (Chanl->limitMode && Chanl->channelMembers.size() >= Chanl->getChanLimit()){
-                std::string *param = allocateForParams(1);
-                param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
-                this->sendReply(Userx->sendFd, this->serverName, ERR_CHANNELISFULL, param);
-                delete [] param;
+                // std::string *param = allocateForParams(1);
+                // param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+                // this->sendReply(Userx->sendFd, this->serverName, ERR_CHANNELISFULL, param);
+                // delete [] param;
+                this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_BADCHANNELKEY, ""), send);
             }
             else if (Chanl->keyMode && Chanl->GetThekey() != p->second){
-                std::string *param = allocateForParams(1);
-                param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
-                this->sendReply(Userx->sendFd, this->serverName, ERR_BADCHANNELKEY, param);
-                delete [] param;
+                // std::string *param = allocateForParams(1);
+                // param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+                // this->sendReply(Userx->sendFd, this->serverName, ERR_BADCHANNELKEY, param);
+                // delete [] param;
+                this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_BADCHANNELKEY, ""), send);
             }
             else{
                 Chanl->channelMembers.push_back(Userx);
                 Userx->joinedChannels.push_back(Chanl);
-                this->sendGenericReply(Userx, "JOIN", Chanl, "");
-                this->sendReplyNames(Userx, RPL_NAMREPLY, Chanl);
-                std::vector<User *>::iterator it; // test for chanops and ircGod
-                for (it = Chanl->channelOps.begin(); it != Chanl->channelOps.end(); it++){
-                    std::cout << "CHANELOPS :" << Chanl->channelOps.begin() - it << (*it)->getNick() << std::endl;
-                }
-                for (it = Chanl->channelMembers.begin(); it != Chanl->channelMembers.end(); it++){
-                    std::cout << "USERS :" << Chanl->channelMembers.begin() - it << (*it)->getNick() << std::endl;
-                }
+                // this->sendGenericReply(Userx, "JOIN", Chanl, "");
+                // this->sendReplyNames(Userx, RPL_NAMREPLY, Chanl);
+                this->sendHermes(this->sendGenericCode(Userx, Chanl, "JOIN", ""), Chanl->channelMembers);
+                this->sendHermes(this->sendNumericCode(Userx, Chanl, RPL_NAMREPLY, ""), send);
+                this->sendHermes(this->sendNumericCode(Userx, Chanl, RPL_ENDOFNAMES, ""), send);
+                //std::vector<User *>::iterator it; // test for chanops and ircGod
+                // for (it = Chanl->channelOps.begin(); it != Chanl->channelOps.end(); it++){
+                //     std::cout << "CHANELOPS :" << Chanl->channelOps.begin() - it << (*it)->getNick() << std::endl;
+                // }
+                // for (it = Chanl->channelMembers.begin(); it != Chanl->channelMembers.end(); it++){
+                //     std::cout << "USERS :" << Chanl->channelMembers.begin() - it << (*it)->getNick() << std::endl;
+                // }
             }
         }
         p++;
@@ -284,6 +302,7 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
     std::string channel2;
     std::string reason;
     std::vector<std::string >channel;
+    std::vector<User *>      send;
     std::vector<std::string >::iterator it;
     
 
@@ -297,9 +316,10 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
         int j = Chanl->findUserinChannel(Userx->sendFd); 
         if (j != -1){
             User *tmp = Chanl->channelMembers[j];
-            Chanl->channelMembers.erase(Chanl->channelMembers.begin() + j);
             int it = this->channelFinder2(Chanl->channelName, Userx->joinedChannels);
             Userx->joinedChannels.erase(Userx->joinedChannels.begin() + it);
+            this->sendHermes(this->sendGenericCode(Userx, Chanl, "PART", ""), Chanl->channelMembers);
+            Chanl->channelMembers.erase(Chanl->channelMembers.begin() + j);
             if(Chanl->channelMembers.size() == 0 && Chanl->channelName != "#Lobby!")
             {
                 for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
@@ -311,13 +331,15 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
                     }
                 }
             }
-            this->sendGenericReply(Userx, "PART", Chanl, "");
+            //this->sendGenericReply(Userx, "PART", Chanl, "");
         }
         else{
-            std::string *param = allocateForParams(1);
-            param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
-            this->sendReply(Userx->sendFd, this->serverName, ERR_USERNOTINCHANNEL, param);
-            delete [] param;
+            // std::string *param = allocateForParams(1);
+            // param[0] = Userx->getNickForReply() + " " + Chanl->channelName;
+            // this->sendReply(Userx->sendFd, this->serverName, ERR_USERNOTINCHANNEL, param);
+            // delete [] param;
+            send.push_back(Userx);
+            this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_USERNOTINCHANNEL, ""), send);
         }
         it++;
     }
@@ -382,42 +404,54 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
 // }
 
 void    Server::handleCmdInvite(std::string *params, User *userX, int paramNumber){
-    std::string *param = allocateForParams(1);
+    // std::string *param = allocateForParams(1);
+    std::vector<User *> send;
+    send.push_back(userX);
     if (paramNumber > 3){
-        param[0] =  userX->getNickForReply() + " :Wrong Syntax";
-        sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " :Wrong Syntax";
+        // sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , param);
+        // delete [] param;
+        this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Wrong Syntax!"), send);
         return;
     }
     Channel *chanX = channelFinder(params[2]);
     User    *receiver = this->findUserinServ(params[1]);
     if (!chanX || !receiver){
         // err channel or user do not exist!
-        param[0] =  userX->getNickForReply() + " :User or Channel do not exist";
-        sendReply(userX->sendFd, this->serverName, ERR_NOSUCHNICK, param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " :User or Channel do not exist";
+        // sendReply(userX->sendFd, this->serverName, ERR_NOSUCHNICK, param);
+        // delete [] param;
+        if (!chanX)
+            this->sendHermes(this->sendNumericCode(userX, chanX, ERR_NOSUCHCHANNEL, "Nick is not valid"), send);
+        else if (!receiver)
+            this->sendHermes(this->sendNumericCode(userX, chanX, ERR_NOSUCHNICK, "Channel does not exist"), send);
         return;
     }
     int     chanopCheck = this->findUserinChan(userX->sendFd, chanX->channelOps); // if sender is a ChanOp
-    int     checker_ = this->findUserinChan(userX->sendFd, chanX->channelMembers); // if receiver is already a member of the channel
+    int     checker_ = this->findUserinChan(receiver->sendFd, chanX->channelMembers); // if receiver is already a member of the channel
     if (chanopCheck == -1){
         // Sender is not a ChanOp
-        param[0] =  userX->getNickForReply() + " " + chanX->channelName + " :You are not Chanop!";
-        sendReply(userX->sendFd, this->serverName, ERR_CHANOPRIVSNEEDED, param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " " + chanX->channelName + " :You are not Chanop!";
+        // sendReply(userX->sendFd, this->serverName, ERR_CHANOPRIVSNEEDED, param);
+        // delete [] param;
+        this->sendHermes(this->sendNumericCode(userX, chanX, ERR_CHANOPRIVSNEEDED, "You are not a Chanop!"), send);
         return; 
     }
-    if (checker_ == -1){
+    if (checker_ != -1){
         // err the inviter is not in the channel
-        param[0] =  userX->getNickForReply() + " " + chanX->channelName + " :User not in Channel!";
-        sendReply(userX->sendFd, this->serverName, ERR_USERONCHANNEL, param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " " + chanX->channelName + " :User not in Channel!";
+        // sendReply(userX->sendFd, this->serverName, ERR_USERONCHANNEL, param);
+        // delete [] param;
+        this->sendHermes(this->sendNumericCode(userX, chanX, ERR_USERONCHANNEL, "The invited user is already in the channel"), send);
         return;
     }
     //if (chanX->inviteMode){
         receiver->invitedChannels.push_back(chanX);
-        param[0] = userX->getNickForReply() + " has invited you!";
-        sendReply(receiver->sendFd, this->serverName, RPL_INVITING, param);
+        std::vector<User *> send2;
+        send2.push_back(receiver);
+        this->sendHermes(this->sendNumericCode(receiver, chanX, RPL_INVITING, "You have been invited!"), send2);
+        // param[0] = userX->getNickForReply() + " has invited you!";
+        // sendReply(receiver->sendFd, this->serverName, RPL_INVITING, param);
         // send message
     //}
     //else{
@@ -425,43 +459,51 @@ void    Server::handleCmdInvite(std::string *params, User *userX, int paramNumbe
         // params[0] =  userX->getNickForReply();
         // sendReply(userX->sendFd, this->serverName, ERR_USERONCHANNEL, params);
     //}
-    delete [] param;
+    // delete [] param;
     return ;
 }
 
 void    Server::handleCmdKick(std::string *params, User *userX, int paramNumber){
-    std::string *param = allocateForParams(1);
+    std::vector<User *> send;
+    send.push_back(userX);
+    //std::string *param = allocateForParams(1);
     if (paramNumber > 3){
         // err too many arguments
-        param[0] =  userX->getNickForReply() + " :Wrong Syntax";
-        sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " :Wrong Syntax";
+        // sendReply(userX->sendFd, this->serverName, ERR_NEEDMOREPARAMS , param);
+        // delete [] param;
+        this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Wrong Syntax"), send);
         return;
     }
     Channel *chanX = channelFinder(params[1]);
     User    *receiver = this->findUserinServ(params[2]);
     if (!chanX || !receiver){
         // err Channel or user do not exist
-        param[0] =  userX->getNickForReply() + " :User or Channel do not exist";
-        sendReply(userX->sendFd, this->serverName, ERR_NOSUCHNICK, param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " :User or Channel do not exist";
+        // sendReply(userX->sendFd, this->serverName, ERR_NOSUCHNICK, param);
+        // delete [] param;
+        if (!chanX)
+            this->sendHermes(this->sendNumericCode(userX, chanX, ERR_NOSUCHCHANNEL, "Nick is not valid"), send);
+        else if (!receiver)
+            this->sendHermes(this->sendNumericCode(userX, chanX, ERR_NOSUCHNICK, "Channel does not exist"), send);
         return;
     }
     int     chanopCheck = this->findUserinChan(userX->sendFd, chanX->channelOps); // if sender is a ChanOp
-    std::cout <<  "||||--->" << chanopCheck << std::endl;
     int     checker_ = this->findUserinChan(receiver->sendFd, chanX->channelMembers); // if receiver is already a member of the channel
     if (chanopCheck == -1){
         // Sender is not a ChanOp
-        param[0] =  userX->getNickForReply() + " " + chanX->channelName + " :You are not Chanop!";
-        sendReply(userX->sendFd, this->serverName, ERR_CHANOPRIVSNEEDED, param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " " + chanX->channelName + " :You are not Chanop!";
+        // sendReply(userX->sendFd, this->serverName, ERR_CHANOPRIVSNEEDED, param);
+        // delete [] param;
+        this->sendHermes(this->sendNumericCode(userX, chanX, ERR_CHANOPRIVSNEEDED, "You are not a Chanop!"), send);
         return;
     }
     if (checker_ == -1){
         // err the inviter is not in the channel
-        param[0] =  userX->getNickForReply() + " :User is not in the channel!";
-        sendReply(userX->sendFd, this->serverName, ERR_USERONCHANNEL, param);
-        delete [] param;
+        // param[0] =  userX->getNickForReply() + " :User is not in the channel!";
+        // sendReply(userX->sendFd, this->serverName, ERR_USERONCHANNEL, param);
+        // delete [] param;
+        this->sendHermes(this->sendNumericCode(userX, chanX, ERR_USERNOTINCHANNEL, "The user is not in the channel!"), send);
         return;
     }
     else{
@@ -471,9 +513,13 @@ void    Server::handleCmdKick(std::string *params, User *userX, int paramNumber)
                 break;
         }
         receiver->joinedChannels.erase(receiver->joinedChannels.begin() + i);
+        std::vector<User *> send2;
+        send2.push_back(receiver);
+        this->sendHermes(this->sendGenericCode(receiver, chanX, "PART", ""), send2);
+        this->sendHermes(this->sendGenericCode(userX, chanX, "KICK", (receiver->getNickForReply() + " :" + params[3])), chanX->channelMembers);
         chanX->channelMembers.erase(chanX->channelMembers.begin() + checker_);
         // send kick message here
-        sendGenericReply(receiver, "KICK" ,chanX, "");
-        sendGenericReply(receiver,"PART", chanX, "");
+        // sendGenericReply(receiver, "KICK" ,chanX, "");
+        // sendGenericReply(receiver,"PART", chanX, "");
     }
 }

@@ -45,6 +45,9 @@ class   Server
         void    lostConnection(User *user);
         void	sendInstructions(int clientFd);
         void	sendWelcome(User *user);
+        void	sendHermes(std::string reply, std::vector<User *> recipients);
+        std::string	sendNumericCode(User *userX, Channel* channel, std::string numericCode, std::string lines);
+        std::string	sendGenericCode(User *userX, Channel *chan, std::string prefix, std::string lines);
         void    sendWelcome(User *user, Channel *current);
         void    handleOtherCmds(User *UserX, std::string* cmdParams, int paramNumber);
         void    sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params);

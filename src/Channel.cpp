@@ -4,7 +4,13 @@ Channel::Channel(){}
 Channel::Channel(std::string s, std::string topic) : channelName(s), channelTopic(topic){
     std::cout << this->channelName + " has been created!" << std::endl;
 }
-Channel::Channel(std::string s, std::string topic, std::string pswd) : channelName(s), channelTopic(topic), keyMode(true) ,channelKey(pswd){
+Channel::Channel(std::string s, std::string topic, std::string pswd) : channelName(s), channelTopic(topic){
+    if (pswd != ""){
+        this->keyMode = true;
+        this->setTheKey(pswd);
+    }
+    else
+        this->keyMode = false;
     std::cout << this->channelName + " has been created!" << std::endl;
 }
 Channel::Channel(Channel const &s){

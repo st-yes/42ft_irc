@@ -211,12 +211,15 @@ void    Server::lostConnection(User *user)
 void    Server::defaultChannelsAdd(User *user)
 {
     Channel                             *current;
+    std::vector<User*>               send;
+    send.push_back(user);
     current = channelFinder("#Lobby!");
     if (current){
         current->channelMembers.push_back(user);
         user->joinedChannels.push_back(current);
         user->defaultChannel = current;
-        this->sendGenericReply(user, "JOIN", user->defaultChannel, "You joined the default channel, welcome!");
+        //this->sendGenericReply(user, "JOIN", user->defaultChannel, "You joined the default channel, welcome!");
+        this->sendHermes(this->sendGenericCode(user, current, "JOIN", "you have joined the default"), send);
     }
     else // add error!
         this->lostConnection(user);

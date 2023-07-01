@@ -5,17 +5,20 @@ void Server::handleCmdMsg(std::string	*params, User *userX ,int paramNumber)
 	int			fd;
 	std::string	*paramsRep;
 	Channel		*channelName;
+	std::vector<User*> sender;
+	sender.push_back(userX);
 	//channel
 	if (params[1][0] != '#')
 	{
 		fd =  this->findClient(params[1]);
 		if (fd == -1)
 		{
-				paramsRep = allocateForParams(2);
-				paramsRep[0] = userX->getNickForReply();
-				paramsRep[1] = ":No such nick";
-				sendReply(userX->sendFd, ERR_NOSUCHNICK, paramsRep);
-				delete[] paramsRep;
+				// paramsRep = allocateForParams(2);
+				// paramsRep[0] = userX->getNickForReply();
+				// paramsRep[1] = ":No such nick";
+				// sendReply(userX->sendFd, ERR_NOSUCHNICK, paramsRep);
+				// delete[] paramsRep;
+				this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHNICK, "there is no such nick"), sender);
 		}
 		else
 		{
@@ -33,10 +36,11 @@ void Server::handleCmdMsg(std::string	*params, User *userX ,int paramNumber)
 		channelName = channelFinder(params[1]);
 		if (channelName == NULL)
 		{
-			paramsRep = allocateForParams(2);
-			paramsRep[0] = userX->getNickForReply();
-			paramsRep[1] = ":No such channel";
-			sendReply(userX->sendFd, ERR_NOSUCHNICK, paramsRep);
+			// paramsRep = allocateForParams(2);
+			// paramsRep[0] = userX->getNickForReply();
+			// paramsRep[1] = ":No such channel";
+			// sendReply(userX->sendFd, ERR_NOSUCHNICK, paramsRep);
+			this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "theres no such channel"), sender);
 		}
 		else
 		{

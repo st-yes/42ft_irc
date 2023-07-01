@@ -158,3 +158,47 @@ void User::getCommands(std::string buffer, bool reset)
 		this->commandFull.push_back(singleCommand);
 	}
 }
+
+std::string	Server::sendNumericCode(User *userX, Channel* channel, std::string numericCode, std::string lines){
+	std::string reply = "";
+	std::string nameChannel = "";
+	if(channel)
+		nameChannel = channel->channelName + " ";
+	if (numericCode != RPL_WELCOME && numericCode != RPL_NAMREPLY)
+		reply += ":BANANA " + numericCode + " " + userX->getNickForReply() + " " + nameChannel + ":" + lines + "\r\n";
+	else if (numericCode == RPL_NAMREPLY){
+			reply = std::string(":BANANA ") + numericCode + " " + userX->getNickForReply() + "@" + userX->getUsrHostName() + " = "+ nameChannel + ":";
+			for (int i = 0; i != channel->channelMembers.size(); i++){
+				reply += channel->channelMembers[i]->getNickForReply() + " ";
+			}
+			reply += "\r\n";
+		}
+	else if (numericCode == RPL_WELCOME)
+		reply += std::string(RPL_WELCOME) + " " + userX->getNickForReply() + " :Welcome to BANANA TASBA7 " + userX->getNickForReply() + "!" + userX->getUsrName() + "@" + userX->getUsrHostName() + "\r\n";
+	return reply;
+}
+
+std::string	Server::sendGenericCode(User *userX, Channel *chan, std::string prefix, std::string lines){
+	std::string reply = ":" + userX->getNickForReply() + "@" + userX->getHostForReply() + " " + prefix + " " + chan->channelName;
+	if (prefix == "TOPIC")
+		reply += " " + chan->channelTopic + "\r\n";
+	else if (prefix == "MODE" || prefix == "KICK")
+		reply += " " + lines + "\r\n";
+	else
+		reply += "\r\n";
+	std::cout << "yoooo : " << reply << std::endl;
+	return reply;
+}
+
+void	Server::sendHermes(std::string reply, std::vector<User *> recipients){
+	if (recipients.empty())
+		return ;
+	for (int i = 0; i != recipients.size(); i++){
+		std::cout << "daaamn : " << reply << std::endl;
+		if (send(recipients[i]->sendFd, reply.c_str(), reply.length(), 0) == -1){
+			this->lostConnection(recipients[i]);
+			return;
+		}
+	}
+	return ;
+}
