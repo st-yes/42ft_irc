@@ -9,7 +9,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <iostream>
-
+#include "Colors.hpp"
 # define MAX_PORT 65535
 # define MIN_PORT 1
 # define BACKLOG 10
@@ -62,9 +62,10 @@ bool			isAllSpace(std::string	str);
 std::string		*allocateForParams(int size);
 std::string		assembleParmsIntoToken(std::string * params);
 std::string 	*getCmdParams(std::string	buffer, User *userX, int *paramNumber);
-
+bool	validCmd(std::string	cmdLower, std::string input);
 /*---- DEBUG ----*/
 void	printParams(std::string *params);
 void	trimLast(std::string&	str);
 bool 	successiveSpace(std::string	cmd);
 void	correspondence(int way, std::string buff);
+

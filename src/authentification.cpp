@@ -69,13 +69,13 @@ void Server::handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNum
 		std::cout << "PARAMS = " << std::flush;
 		printParams(cmdParams);
 	}
-	if (cmdParams[0] == "PASS" || cmdParams[0] == "pass")
+	if (validCmd("pass", cmdParams[0]))
 	{
 		UserX->primer *= 3;
 		this->handleCmdPass(cmdParams, UserX, paramNumber);
 		
 	}
-	else if (cmdParams[0] == "NICK" || cmdParams[0] == "nick")
+	else if (validCmd("nick", cmdParams[0]))
 	{
 		if (first)
 		{
@@ -84,10 +84,11 @@ void Server::handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNum
 		}
 		this->handleCmdNick(cmdParams, UserX, paramNumber);
 	}
-	else if (cmdParams[0] == "USER" || cmdParams[0]== "user")
+	else if (validCmd("user", cmdParams[0]))
 	{
 			UserX->primer *= 7;
 			this->handleCmdUser(cmdParams, UserX, paramNumber);
 	}
+	delete[] cmdParams;
 }
 

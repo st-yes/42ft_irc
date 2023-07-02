@@ -112,7 +112,19 @@ void	Server::sendWelcome(User *user)
 		return;
 	std::string	msg = "";
 
-	msg += std::string(RPL_WELCOME) + " " + user->getNickForReply() + " :Welcome to BANANA TASBA7 " + user->getNickForReply() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
+	//msg += std::string(RPL_WELCOME) + " " + user->getNickForReply() + " :Welcome to BANANA TASBA7 " + user->getNickForReply() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
+	// std::string asciiArt = R"(
+	// __                           
+	// / /  ___ ____  ___ ____  ___ _
+	// / _ \/ _ `/ _ \/ _ `/ _ \/ _ `/
+	// /_.__/\_,_/_//_/\_,_/_//_/\_,_/ 
+	// )";
+	std::string asciiArt = "\\ __                           \n"
+                       "/ /  ___ ____  ___ ____  ___ _ \n"
+                       "/ _ \\/ _ `/ _ \\/ _ `/ _ \\/ _ `/\n"
+                       "/_.__/\\_,_/_//_/\\_,_/_//_/\\_,_/ \n";
+
+	msg += std::string(RPL_WELCOME) + " " + user->getNickForReply() + " :Welcome to\n" + asciiArt + "\r\n";
 	//correspondence(CLIENT_TO_SERVER, msg);
 	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
 		throw errorErrno(); // check for err
@@ -162,6 +174,10 @@ void User::getCommands(std::string buffer, bool reset)
 std::string	Server::sendNumericCode(User *userX, Channel* channel, std::string numericCode, std::string lines){
 	std::string reply = "";
 	std::string nameChannel = "";
+	std::string asciiArt = "   __                           \n"
+                       "  / /   ___ ____  ___ ____  ___ _ \n"
+                       " / _ \\/ _ `/ _ \\/ _ `/ _ \\/ _ `/\n"
+                       "/_.__/\\_,_/_//_/\\_,_/_//_/\\_,_/ \n";
 	if(channel)
 		nameChannel = channel->channelName + " ";
 	if (numericCode != RPL_WELCOME && numericCode != RPL_NAMREPLY)
@@ -174,7 +190,7 @@ std::string	Server::sendNumericCode(User *userX, Channel* channel, std::string n
 			reply += "\r\n";
 		}
 	else if (numericCode == RPL_WELCOME)
-		reply += std::string(RPL_WELCOME) + " " + userX->getNickForReply() + " :Welcome to BANANA TASBA7 " + userX->getNickForReply() + "!" + userX->getUsrName() + "@" + userX->getUsrHostName() + "\r\n";
+		reply += std::string(RPL_WELCOME) + " " + userX->getNickForReply() + " :Welcome to\n" + asciiArt + "\r\n";
 	return reply;
 }
 

@@ -17,11 +17,11 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
         it = this->gods.find(params[1]);
         if (it != this->gods.end() && it->second == params[2]){
             ircGod *elite = new ircGod(userX, it->first);
-            if (userX->joinedChannels.empty()){
-                std::cout << "There has been a problem, User not assigned to a channel!" << std::endl;
-                this->lostConnection(userX);
-                return;
-            }
+            // if (userX->joinedChannels.empty()){
+            //     std::cout << "There has been a problem, User not assigned to a channel!" << std::endl;
+            //     this->lostConnection(userX);
+            //     return;
+            // }
             for(int k = 0; k != userX->joinedChannels.size(); k++){
                 Channel *p = userX->joinedChannels[k];
                 int i = p->findUserinChannel(userX->sendFd);
@@ -52,6 +52,7 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
             // delete [] paramsRep;
             this->sendHermes(this->sendNumericCode(userX, NULL, ERR_PASSWDMISMATCH, "Invalid Credentials"), send);
         }
+        delete userX;
     }
 }
 

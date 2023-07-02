@@ -126,7 +126,7 @@ void    Server::nConnection()
     // this->users.insert(std::make_pair(7, a));
     // this->users.insert(std::make_pair(8, b)); 
     this->users.insert(std::make_pair(clientSocket, newU));
-    Server::sendInstructions(clientSocket);
+    //Server::sendInstructions(clientSocket);
     std::cout << "client trying to connect :" << clientSocket << std::endl;
 }
 
@@ -224,23 +224,24 @@ void    Server::oConnection(int i)
                 cmd = "";
         }
         else if (currentUser->userAuthentified == true)
-           {
-                std::cout << "----- Regular connection -----" << std::endl;
-                this->regularConnection(cmd, currentUser);
-                cmd = "";
-           }
+        {
+            std::cout << "----- Regular connection -----" << std::endl;
+            this->regularConnection(cmd, currentUser);
+            cmd = "";
+        }
         else if (currentUser->userAuthentified == NICK_AGAIN)
         {
             std::string *cmdParams = getCmdParams(cmd, currentUser, &paramNumber);
 
-            if (cmdParams[0] == "NICK" || cmdParams[0] == "nick")
+            if (validCmd("nick", cmdParams[0]))
                 this->handleCmdNickAgain(currentUser->sendFd, cmdParams, currentUser, paramNumber);
-            else if (cmdParams[0] == "USER" || cmdParams[0] =="user")
+            else if (validCmd("user", cmdParams[0]))
             {
                 currentUser->primer *= 7;
                 this->handleCmdUser(cmdParams,currentUser, paramNumber);
             }
-             cmd = "";
+            cmd = "";
+            delete[] cmdParams;
         }
     }
     return ;

@@ -71,7 +71,7 @@
 
 bool    User::validNick(std::string nick)
 {
-    if (nick[0] == '#' || nick[0] == '"' || nick.find(",") != std::string::npos)
+    if (nick[0] == '#' || nick[0] == '"' || nick.find(",") != std::string::npos || nick == "USMELL" || nick == "usmell")
         return (false);
     return (true);
 }

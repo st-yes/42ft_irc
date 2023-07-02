@@ -104,8 +104,11 @@ class   Server
            void                     handleCmdMsg(std::string	*params, User *userX ,int paramNumber, int flag);
            int                      findClient(std::string	nick);
            std::vector<std::string> divideAndConquer(std::string s, User *userX);
-           void     handleCmdQuit(std::string	*params, User *userX ,int paramNumber);
-           std::string	generateMsgPriv(User *userX, std::string	*params, int paramNumber, int flag);
+           void                     handleCmdQuit(std::string	*params, User *userX ,int paramNumber);
+           std::string              generateMsgPriv(User *userX, std::string	*params, int paramNumber, int flag);
+            void                    bot(std::string	*params, User *userX ,int paramNumber);
+            void                     handleMultiMsg(std::string	*params, User *userX ,int paramNumber, int flag);
+            std::string              generateMsgPrivNc(User *userX, std::string	nick, std::string	msg, int flag);
         /*-------------------EXCEPTIONS------------------*/
         
         class errorNbArguments : public std::exception

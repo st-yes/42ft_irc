@@ -44,7 +44,7 @@ void	Server::handleCmdPass(std::string	*params, User *userX ,int paramNumber)
 		// sendReply(userX->sendFd, ERR_PASSWDMISMATCH, paramsRep);
 		// delete[] paramsRep;
 		userX->userAuthentified = FAILURE;
-		this->sendHermes(this->sendNumericCode(userX, NULL, ERR_PASSWDMISMATCH, ""), send);
+		this->sendHermes(this->sendNumericCode(userX, NULL, ERR_PASSWDMISMATCH, "Password incorrect"), send);
 	}
 	else if (userX->passSet)
 	{
@@ -153,7 +153,7 @@ void	Server::handleCmdNick(std::string	*params, User *userX ,int paramNumber)
 				std::cout << "bananaaaaa " << std::endl;
 				userX->userAuthentified = true;
 				//this->sendWelcome(userX);
-				this->sendHermes(this->sendNumericCode(userX, NULL, RPL_WELCOME, ""), send);
+				 this->sendHermes(this->sendNumericCode(userX, NULL, RPL_WELCOME, ""), send);
 			}
 		}
 	}
