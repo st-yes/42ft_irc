@@ -51,7 +51,7 @@ void	Server::sendStatusUpdate(int clientFd, User *userX, std::string com, std::s
 		+ " " + com + " " + msg + "\r\n";
 	correspondence(CLIENT_TO_SERVER, message);
 	if (send(clientFd, message.c_str(), message.length(), 0) == -1)
-		throw errorErrno();
+		this->lostConnection(userX);
 }
 
 void Server::handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNumber)

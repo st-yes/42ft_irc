@@ -57,7 +57,10 @@ void Server::handleCmdMsg(std::string	*params, User *userX ,int paramNumber, int
 				privMsg = generateMsgPriv(userX, params, paramNumber, flag);
 				correspondence(CLIENT_TO_SERVER, privMsg);
 				if (send(fd, privMsg.c_str(), privMsg.length(), 0) == -1)
-					throw errorErrno();
+				{
+					this->lostConnection(userX);
+					return ;
+				}
 			}
 	}
 	else
@@ -110,7 +113,6 @@ void	Server::handleMultiMsg(std::string	*params, User *userX ,int paramNumber, i
 	std::vector<User*>	senders;
 	senders.push_back(userX);
 
-	std::cout << "multiple here = " << params[2] << std::endl;
 	if (paramNumber != 2)
 	{
 		this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NORULES, "syntax error"), senders);
@@ -132,8 +134,10 @@ void	Server::handleMultiMsg(std::string	*params, User *userX ,int paramNumber, i
 					{
 						privMsg = generateMsgPrivNc(userX, token, params[2], flag);
 						correspondence(CLIENT_TO_SERVER, privMsg);
-						if (send(fd, privMsg.c_str(), privMsg.length(), 0) == -1)
-							throw errorErrno();
+						if (send(fd, privMsg.c_str(), privMsg.length(), 0) == -1){
+							this->lostConnection(userX);
+							return ;
+						}
 					}
 			}
 			else

@@ -103,10 +103,14 @@ void    Server::nConnection()
     memset(&pollCli, 0, sizeof(pollCli));
     cliAddrBind = reinterpret_cast<sockaddr*>(&clientSocketAddr);
     clientSocket = accept(this->servSocketFd, cliAddrBind, &clientSocketSize);
-    if (clientSocket < 0)
-        throw errorErrno();
-    if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) == -1)
-        throw errorErrno();
+    if (clientSocket < 0){
+        close(clientSocket);
+        return ;
+    }
+    if (fcntl(clientSocket, F_SETFL, O_NONBLOCK) == -1){
+        close(clientSocket);
+        return ;
+    }
     pollCli.fd = clientSocket;
     pollCli.events = POLLIN;
     this->pollers.push_back(pollCli);

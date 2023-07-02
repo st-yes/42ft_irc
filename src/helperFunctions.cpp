@@ -87,7 +87,6 @@ bool    checkAttr(std::string s){
 	if(!s.length())
 		return false;
     for (int i = 1; i < s.length(); i++){
-		std::cout << "|" << s.c_str()[i] << "|" << std::endl;
         if (s.c_str()[i] == 't' || s.c_str()[i] == 'l' || s.c_str()[i] == 'i' || s.c_str()[i] == 'k' || s.c_str()[i] == 'o')
             return true;
     }
@@ -108,7 +107,6 @@ Channel   *Server::channelFinder(std::string s){
     if(this->servChannels.empty())
         return NULL;
     for (std::vector<Channel*>::iterator it = this->servChannels.begin(); it != this->servChannels.end(); it++){
-		std::cout << (*it)->channelName << std::endl;
         if ((*it)->channelName == s)
             return (*it);
     }

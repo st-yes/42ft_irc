@@ -8,7 +8,6 @@ void Server::handleCmdQuit(std::string	*params, User *userX ,int paramNumber)
     std::string reply = "";
     if (!params[1].empty())
         reply = params[1];
-    std::cout << "hiiiiihiiii" << reply << params[2]<< std::endl;
 	for (int i = 0; i != userX->joinedChannels.size(); i++){
         chan = userX->joinedChannels[i];
         indexchanOp = this->findUserinChan(userX->sendFd, chan->channelOps);

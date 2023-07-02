@@ -81,7 +81,6 @@ void	Server::handleCmdNick(std::string	*params, User *userX ,int paramNumber)
 		{
 			if (userX->userAuthentified == NICK_AGAIN)
 			{
-				std::cout << 6 << std::endl;
 				userX->setNick(params[1]);
 				this->sendStatusUpdate(userX->sendFd, userX, "NICK", params[1]);
 				userX->userAuthentified = false;

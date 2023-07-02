@@ -84,6 +84,7 @@ class   Server
         void        handleCmdInvite(std::string *params, User *userX, int paramNumber);
         void        newChannel(std::unordered_map<std::string, std::string>::iterator p, User *userX);
         std::string getChannelPriv(std::string s);
+        std::vector<std::string>    divideAndConquer2(std::string s, User *userX);
     
         /*-- HELPER-FUNCTIONS --*/
             int                     findUserinChan(int fd, std::vector<User *> x);

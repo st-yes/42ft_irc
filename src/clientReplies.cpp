@@ -16,7 +16,6 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 		i++;
 	}
 	reply += "\r\n";
-	std::cout << "[client -> server]" << reply << std::flush;
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
 	{
 		this->lostConnection(user);
@@ -52,7 +51,6 @@ void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, st
 	else if (prefix == "MODE")
 		reply = ":" + userX->getNickForReply() + "@" + userX->getHostForReply() + " " + prefix + " " + chan->channelName + option + "\r\n";
 
-	std::cout << "---->" << reply << std::endl;
 	if (send(userX->sendFd, reply.c_str(), reply.length(), 0) == -1)
 	{
 		this->lostConnection(userX);
@@ -67,7 +65,6 @@ void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, st
 			return ;
 		}
 	}
-	std::cout << "Whats up ::: " << reply << std::endl;
 }
 
 void	Server::sendWelcome(User *user)
@@ -82,8 +79,10 @@ void	Server::sendWelcome(User *user)
                        "/_.__/\\_,_/_//_/\\_,_/_//_/\\_,_/ \n";
 
 	msg += std::string(RPL_WELCOME) + " " + user->getNickForReply() + " :Welcome to\n" + asciiArt + "\r\n";
-	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
-		throw errorErrno();
+	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1){
+		this->lostConnection(user);
+		return;
+	}
 	this->defaultChannelsAdd(user);
 
 }
@@ -153,7 +152,6 @@ std::string	Server::sendGenericCode(User *userX, Channel *chan, std::string pref
 		reply += " " + lines + "\r\n";
 	else
 		reply += "\r\n";
-	std::cout << "yoooo : " << reply << std::endl;
 	return reply;
 }
 
@@ -161,7 +159,6 @@ void	Server::sendHermes(std::string reply, std::vector<User *> recipients){
 	if (recipients.empty())
 		return ;
 	for (int i = 0; i != recipients.size(); i++){
-		std::cout << "daaamn : " << reply << std::endl;
 		if (send(recipients[i]->sendFd, reply.c_str(), reply.length(), 0) == -1){
 			this->lostConnection(recipients[i]);
 			return;

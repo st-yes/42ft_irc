@@ -21,8 +21,10 @@ bool    Server::syntaxCheck(char *p){
     if(!p)
         return true;
     int i = 0;
-    while (i != strlen(p)){
-        if (p[i] == '#' && i != 0)
+    if (p[0] != '#')
+            return true;
+    while (i != strlen(p)){ 
+        if ((p[i] == '#' && i != 0))
             return true;
         if (p[i] == ':' || p[i] == ',' || p[i] == 7)
             return true;
@@ -49,8 +51,8 @@ std::vector<std::string>    Server::divideAndConquer(std::string s, User *userX)
                 this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist : " + std::string(p)), send);
                 return store;
             }
-            for (int i = 0; i != store.size(); i++)
-                std::cout << store[i] << std::endl;
+            // for (int i = 0; i != store.size(); i++)
+            //     std::cout << store[i] << std::endl;
             p = strtok(NULL, ",");
         }
     }
@@ -59,10 +61,31 @@ std::vector<std::string>    Server::divideAndConquer(std::string s, User *userX)
             store.push_back(s);
         }
         else{
-            this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist : " + std::string(p)), send);
+            this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist : " + std::string(hold)), send);
             return store;
         }
     }
+    return store;
+}
+
+std::vector<std::string>    Server::divideAndConquer2(std::string s, User *userX){
+    std::vector<std::string> store;
+    char                     *p = NULL;
+    char                     *hold = const_cast<char*>(s.c_str());
+    std::vector<User *>      send;
+    send.push_back(userX);
+
+    if(s.empty())
+        return store;
+    if (s.find(',') != std::string::npos){
+        p = strtok(hold, ",");
+        while (p != NULL){
+            store.push_back(p);
+            p = strtok(NULL, ",");
+        }
+    }
+    else
+        store.push_back(s);
     return store;
 }
 
@@ -79,11 +102,12 @@ void    Server::handleCmdJoin(std::string *s, User *userX, int paramNum){
     }
     chanStore = divideAndConquer(s[1], userX);
     if (!s[2].empty())
-        passStore = divideAndConquer(s[2], userX);
+        passStore = divideAndConquer2(s[2], userX);
     else
         passStore.push_back("");
-    if (chanStore.size() == 0 || passStore.size() == 0 ||chanStore.size() != passStore.size()){
+    if (chanStore.empty() || (!passStore.empty() && chanStore.size() != passStore.size())){
         this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Syntax Error!"), send);
+        return;
     }
     for (int i = 0; i != chanStore.size(); i++)
         channels.insert(std::make_pair(chanStore[i], passStore[i]));
@@ -102,6 +126,7 @@ void    Server::newChannel(std::unordered_map<std::string, std::string>::iterato
     if (p->second != ""){
         nw->keyMode = true;
         nw->setTheKey(p->second);
+        std::cout << "hna kayna0000>" << nw->GetThekey() << std::endl;
     }
     std::vector<User *>send;
     send.push_back(Userx);
@@ -116,7 +141,6 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
     std::vector<User *>send;
     send.push_back(Userx);
     std::unordered_map<std::string, std::string>::iterator p = tmp.begin();
-    std::cout << tmp.size() << std::endl;
     while(p != tmp.end())
     {
         Channel   *Chanl = this->channelFinder(p->first);
