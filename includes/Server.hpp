@@ -55,7 +55,7 @@ class   Server
         bool	nickAlreadyInUse(std::string nick);
         bool	authenticated(int fdClient);
         void    defaultChannelsAdd(User *user);
-        void    firstConnection(int i, char *buffer, User *UserX);
+        void    firstConnection(int i, std::string buffer, User *UserX);
         /*-- COMMANDS PART 1--*/
         void    handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNumber);
         void	handleCmdPass(std::string	*params, User *userX, int paramNumber);
@@ -101,9 +101,11 @@ class   Server
             void                    addNewChanops(User *userX, Channel *chan);
            // void    sendResponses(User *user, Channel *chan, std::string num, std::string s);
            std::vector<User *>      godFinder();
-           void                     handleCmdMsg(std::string	*params, User *userX ,int paramNumber);
+           void                     handleCmdMsg(std::string	*params, User *userX ,int paramNumber, int flag);
            int                      findClient(std::string	nick);
            std::vector<std::string> divideAndConquer(std::string s, User *userX);
+           void     handleCmdQuit(std::string	*params, User *userX ,int paramNumber);
+           std::string	generateMsgPriv(User *userX, std::string	*params, int paramNumber, int flag);
         /*-------------------EXCEPTIONS------------------*/
         
         class errorNbArguments : public std::exception

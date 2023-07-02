@@ -38,7 +38,6 @@ int    Channel::findUserinChannel(int fd){
     for(std::vector<User*>::iterator it = this->channelMembers.begin() ; it != this->channelMembers.end(); it++){
 
         if (*it && (*it)->sendFd == fd){
-            std::cout << "found " << std::endl;
             return (it - this->channelMembers.begin());
         }
     }

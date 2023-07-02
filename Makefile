@@ -27,6 +27,7 @@ SRC= main.cpp\
 	JoinAndPart.cpp \
 	AuthComands.cpp\
 	privmsgNotice.cpp\
+	quit.cpp\
 
 
 NAME= ircserv

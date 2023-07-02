@@ -5,6 +5,9 @@
 #include "Channel.hpp"
 #include "ircGod.hpp"
 #include "numericReplies.hpp"
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <iostream>
 
 # define MAX_PORT 65535
@@ -24,7 +27,10 @@ enum	commands
 {
 	PASS,
 	NICK,
-	USER
+	USER,
+	PRIVMSG,
+	NOTICE,
+	QUIT
 };
 
 enum flags
@@ -55,7 +61,7 @@ std::string		*fillParams(std::string cmd, int size);
 bool			isAllSpace(std::string	str);
 std::string		*allocateForParams(int size);
 std::string		assembleParmsIntoToken(std::string * params);
-std::string *getCmdParams(char *buffer, User *userX, int *paramNumber);
+std::string 	*getCmdParams(std::string	buffer, User *userX, int *paramNumber);
 
 /*---- DEBUG ----*/
 void	printParams(std::string *params);

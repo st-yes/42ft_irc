@@ -64,7 +64,7 @@ class User{
     public :
         void    getCommands(std::string	buffer, bool reset);
         bool    validNick(std::string s);
-        void    setNc(char *buffer);
+        void    setNc(std::string buffer);
         Channel *channelFinderinUser(std::string s);
 };
 

@@ -182,7 +182,7 @@ std::string	Server::sendGenericCode(User *userX, Channel *chan, std::string pref
 	std::string reply = ":" + userX->getNickForReply() + "@" + userX->getHostForReply() + " " + prefix + " " + chan->channelName;
 	if (prefix == "TOPIC")
 		reply += " " + chan->channelTopic + "\r\n";
-	else if (prefix == "MODE" || prefix == "KICK")
+	else if (prefix == "MODE" || prefix == "KICK" || prefix == "QUIT" || prefix == "PART")
 		reply += " " + lines + "\r\n";
 	else
 		reply += "\r\n";
