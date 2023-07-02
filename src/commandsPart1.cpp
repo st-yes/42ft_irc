@@ -1,7 +1,5 @@
 #include "../includes/Ft_irc.hpp"
 
-
-
 std::string	assembleParmsIntoToken(std::string * params)
 {
 	int			i;
@@ -26,11 +24,6 @@ void	Server::handleCmdNickAgain(int clientFd, std::string	*params, User *userX ,
 
 	if (paramNumber < 1)
 	{
-		// paramsRep = allocateForParams(2);
-		// paramsRep[0] = userX->getNickForReply();
-		// paramsRep[1] = ":No nickname given";
-		// sendReply(userX->sendFd, ERR_ERRONEUSNICKNAME, paramsRep);
-		// delete[] paramsRep;
 		userX->userAuthentified = FAILURE;
 		this->sendHermes(this->sendNumericCode(userX, NULL, ERR_ERRONEUSNICKNAME, "no nickname given"), send);
 	}
@@ -64,7 +57,6 @@ void	Server::handleCmdNickAgain(int clientFd, std::string	*params, User *userX ,
 		if (userX->primer == 3 * 5 * 7 && userX->userAuthentified == false && userX->passSet)
 		{
 			userX->userAuthentified = true;
-			//this->sendWelcome(userX);
 			this->sendHermes(this->sendNumericCode(userX, NULL, RPL_WELCOME, ""), send);
 		}
 	}
@@ -115,11 +107,6 @@ void	Server::handleCmdRegularNick(std::string	*params, User *userX, int paramNum
 
 	if (paramNumber < 1)
 	{
-		// paramsRep = allocateForParams(2);
-		// paramsRep[0] = userX->getNick();
-		// paramsRep[1] = ":No nickname given";
-		// sendReply(userX->sendFd, ERR_ERRONEUSNICKNAME, paramsRep);
-		// delete[] paramsRep;
 		this->sendHermes(this->sendNumericCode(userX, NULL, ERR_ERRONEUSNICKNAME, "no nickname given"), send);
 	}
 	else if (paramNumber > 1 || !userX->validNick(params[1]))
@@ -133,12 +120,6 @@ void	Server::handleCmdRegularNick(std::string	*params, User *userX, int paramNum
 	}
 	else if (nickAlreadyInUse(params[1]))
 	{
-		// paramsRep = allocateForParams(3);
-		// paramsRep[0] = userX->getNick();
-		// paramsRep[1] = params[1];
-		// paramsRep[2] = ":Nickname is already in use";
-		// sendReply(userX->sendFd, ERR_NICKNAMEINUSE, paramsRep);
-		// delete[] paramsRep;
 		this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NICKNAMEINUSE, "nickname already in use"), send);
 	}
 	else

@@ -1,9 +1,5 @@
 #include "../includes/Ft_irc.hpp"
 
-/*-- 
-* template try out of server reply 
-* :prefix numeric code param1 param2 ... + \r\n 
---*/
 void Server::sendReply(int clientFd, std::string prefix, std::string numericCode, std::string *params)
 {
 	std::string	reply;
@@ -26,35 +22,6 @@ void Server::sendReply(int clientFd, std::string prefix, std::string numericCode
 		this->lostConnection(user);
 		return;
 	}
-	//this->lostConnection(clientFd, k);
-}
-
-void Server::sendReplyNames(User *client, std::string numericCode, Channel *chan)
-{
-	std::string	reply;
-	int			i;
-
-	reply = std::string(":BANANA ") + numericCode + " " + client->getNickForReply() + "@" + client->getUsrHostName() + " = "+ chan->channelName + " :";
-	i = 0;
-	while (i != chan->channelMembers.size())
-	{
-		reply += chan->channelMembers[i]->getNickForReply() + " ";
-		i++;
-	}
-	reply += "\r\n";
-	std::cout << "[client -> server]" << reply << std::flush;
-	//correspondence(CLIENT_TO_SERVER, reply);
-	if (send(client->sendFd, reply.c_str(), reply.length(), 0) == -1)
-	{
-		this->lostConnection(client);
-		return ;
-	}
-	reply = std::string(":BANANA ") + RPL_ENDOFNAMES + " " + client->getNickForReply() + " " + chan->channelName + " :End of NAMES list\r\n";
-	if (send(client->sendFd, reply.c_str(), reply.length(), 0) == -1)
-	{
-		this->lostConnection(client);
-		return ;
-	}
 }
 
 void Server::sendReply(int clientFd, std::string numericCode, std::string *params)
@@ -71,10 +38,8 @@ void Server::sendReply(int clientFd, std::string numericCode, std::string *param
 		i++;
 	}
 	reply += "\r\n";
-	//std::cout << "[client -> server]" << reply << std::flush;
-	correspondence(CLIENT_TO_SERVER, reply);
 	if (send(clientFd, reply.c_str(), reply.length(), 0) == -1)
-		throw errorErrno(); // check for err
+		throw errorErrno();
 }
 
 void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, std::string opt){
@@ -105,34 +70,24 @@ void Server::sendGenericReply(User *userX, std::string prefix, Channel *chan, st
 	std::cout << "Whats up ::: " << reply << std::endl;
 }
 
-/* connection established */
 void	Server::sendWelcome(User *user)
 {
 	if (!user->userAuthentified)
 		return;
 	std::string	msg = "";
 
-	//msg += std::string(RPL_WELCOME) + " " + user->getNickForReply() + " :Welcome to BANANA TASBA7 " + user->getNickForReply() + "!" + user->getUsrName() + "@" + user->getUsrHostName() + "\r\n";
-	// std::string asciiArt = R"(
-	// __                           
-	// / /  ___ ____  ___ ____  ___ _
-	// / _ \/ _ `/ _ \/ _ `/ _ \/ _ `/
-	// /_.__/\_,_/_//_/\_,_/_//_/\_,_/ 
-	// )";
 	std::string asciiArt = "\\ __                           \n"
                        "/ /  ___ ____  ___ ____  ___ _ \n"
                        "/ _ \\/ _ `/ _ \\/ _ `/ _ \\/ _ `/\n"
                        "/_.__/\\_,_/_//_/\\_,_/_//_/\\_,_/ \n";
 
 	msg += std::string(RPL_WELCOME) + " " + user->getNickForReply() + " :Welcome to\n" + asciiArt + "\r\n";
-	//correspondence(CLIENT_TO_SERVER, msg);
 	if (send(user->sendFd, msg.c_str(), msg.length(), 0) == -1)
-		throw errorErrno(); // check for err
+		throw errorErrno();
 	this->defaultChannelsAdd(user);
 
 }
 
-/* even without "\r\n" it get sent to official client */
 void	Server::sendInstructions(int clientFd)
 {
 	std::string	instruct;
@@ -141,10 +96,6 @@ void	Server::sendInstructions(int clientFd)
 		throw errorErrno();
 }
 
-/*
-* fill the vector commandfull with the buffer content
-* equalize nc buffer with IRSSI buffer by adding '\r\n' to buffer's nc
-*/
 void User::getCommands(std::string buffer, bool reset)
 {
 	if (reset)
@@ -174,10 +125,10 @@ void User::getCommands(std::string buffer, bool reset)
 std::string	Server::sendNumericCode(User *userX, Channel* channel, std::string numericCode, std::string lines){
 	std::string reply = "";
 	std::string nameChannel = "";
-	std::string asciiArt = "   __                           \n"
-                       "  / /   ___ ____  ___ ____  ___ _ \n"
-                       " / _ \\/ _ `/ _ \\/ _ `/ _ \\/ _ `/\n"
-                       "/_.__/\\_,_/_//_/\\_,_/_//_/\\_,_/ \n";
+	std::string asciiArt = std::string(BOLD) + "   __                           \n" +
+                      std::string(BOLD) + "  / /   ___ ____  ___ ____  ___ _ \n" +
+                       std::string(BOLD) + " / _ \\/ _ `/ _ \\/ _ `/ _ \\/ _ `/\n" + 
+                      std::string(BOLD) + "/_.__/\\_,_/_//_/\\_,_/_//_/\\_,_/ \n" + std::string(RESET);
 	if(channel)
 		nameChannel = channel->channelName + " ";
 	if (numericCode != RPL_WELCOME && numericCode != RPL_NAMREPLY)

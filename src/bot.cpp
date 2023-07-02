@@ -1,4 +1,5 @@
-#include "Ft_irc.hpp"
+#include "../includes/Ft_irc.hpp"
+
 std::string	 botPing(User *userX, std::string nick, std::string cat)
 {
 	std::string	msg;

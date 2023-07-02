@@ -1,9 +1,5 @@
 #include "../includes/Ft_irc.hpp"
 
-/*--
-* return number of parameters in command string 
-* -- command included
---*/
 int	countParams(std::string	command)
 {
 	int params;
@@ -55,10 +51,6 @@ void tokenizeCmd(std::string& cmd, std::string *params)
     }
 }
 
-/*
-* allocate an std::string* of size [size + 1], last element is an empty string 
-* and fill it with parameters of command
-*/
 std::string	*fillParams(std::string cmd, int size)
 {
 	std::string	*params;
@@ -71,7 +63,6 @@ std::string	*fillParams(std::string cmd, int size)
 	return (params);
 }
 
-/*-- trim "\r\n" from end of string --*/
 void	trimLast(std::string&	str)
 {
 	int pos;
@@ -79,10 +70,8 @@ void	trimLast(std::string&	str)
 	pos = str.find("\r\n");
 	if (pos != std::string::npos)
 		str.erase(pos, 2);
-	// else if ()
 }
 
-/* check if string has only spaces */
 bool	isAllSpace(std::string	str)
 {
 	for (int i = 0; i < str.length(); i++)
@@ -107,7 +96,6 @@ bool successiveSpace(std::string	cmd)
 	return (false);
 }
 
-/* allocated for an std::string * of size: size + 1*/
 std::string*	allocateForParams(int size)
 {
 	std::string	*param = new std::string[size + 1];

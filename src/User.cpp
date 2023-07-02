@@ -3,7 +3,6 @@
     User::User(){}
     User::User(std::string name, std::string nick, std::string fullName, std::string hostName) : userName(name), userNick(nick), userFullName(fullName), userHostName(hostName){
 
-        //std::cout << this->userNick + " has been created!" << std::endl;
     }
     User::User(User const &s){
         this->sendFd = s.sendFd;
@@ -27,7 +26,6 @@
 
     }
     User::~User(){
-        //std::cout << this->userNick + " has been deleted!" << std::endl;
     }
     User const &User::operator=(User const &s){
         *this = s;
@@ -35,7 +33,6 @@
     }
 /*-------------------------------------------------------Setters-&-Getters-----------------------------------------------------*/
     void    User::setNick(std::string const s){
-        //std::cout << "what is happening here :::::: " << s << std::endl;
         this->userNick = s;
     }
     void    User::setUsrName(std::string const s){

@@ -19,7 +19,6 @@ void    Server::firstConnection(int i, std::string buffer, User *UserX)
 	int				paramNumber;
 	std::string		*cmdParams;
 	
-	//std::string buff(buffer);
 	UserX->getCommands(buffer, true);
 	size = UserX->commandFull.size();
 	cmdParams = NULL;
@@ -52,11 +51,9 @@ void	Server::sendStatusUpdate(int clientFd, User *userX, std::string com, std::s
 		+ " " + com + " " + msg + "\r\n";
 	correspondence(CLIENT_TO_SERVER, message);
 	if (send(clientFd, message.c_str(), message.length(), 0) == -1)
-		throw errorErrno(); // check for error
+		throw errorErrno();
 }
-/* first: PASS, NICK, USER 
-* function to generate the alternatives : /PASS /pass PASS pass 
-*/
+
 void Server::handleAuthentCmds(User *UserX, std::string* cmdParams, int paramNumber)
 {
 	bool	first;

@@ -144,7 +144,7 @@ void	Server::handleMultiMsg(std::string	*params, User *userX ,int paramNumber, i
 				{
 					this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHNICK, "no such channel"), senders);
 				}
-				else if (channelName->findUserinChannel(userX->sendFd) != -1) //can't find in chnnel
+				else if (channelName->findUserinChannel(userX->sendFd) != -1)
 				{
 					for (int i = 0; i < channelName->channelMembers.size(); i++)
 					{

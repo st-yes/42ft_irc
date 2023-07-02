@@ -1,6 +1,6 @@
 # pragma once
 
-# define BOLD "\033[1m"
+# define BOLD "\033[1m\033[35m"
 # define ITALIC "\033[3m"
 
 /*-- colors --*/
