@@ -232,17 +232,21 @@ void    Server::handleCmdModeOptO(User *userX, std::string s, Channel *chan, int
     else{
         if (mode == 1 && this->findUserinChan(player->sendFd, chan->channelOps) == -1){
             chan->channelOps.push_back(player);
-            this->sendHermes(this->sendNumericCode(userX, chan, RPL_ENDOFBANLIST, "you are now a chanOp"), send);
+            send.push_back(player);
+            this->sendHermes(this->sendNumericCode(player, chan, RPL_ENDOFBANLIST, "user is now a chanOp"), send);
         }
         else if (mode == 0 && this->findUserinChan(player->sendFd, chan->channelOps) != -1){
-           this->sendHermes(this->sendNumericCode(userX, chan, RPL_ENDOFBANLIST, "you are no longer a chanOp"), send);
+            int i = this->findUserinChan(player->sendFd, chan->channelOps);
+            chan->channelOps.erase(chan->channelOps.begin() + i);
+            send.push_back(player);
+           this->sendHermes(this->sendNumericCode(player, chan, RPL_ENDOFBANLIST, "user is no longer a chanOp"), send);
         }
         else if (mode == 1 && this->findUserinChan(player->sendFd, chan->channelOps) != 1){
-           this->sendHermes(this->sendNumericCode(userX, chan, RPL_ENDOFBANLIST, "you are already a chanOp"), send);
+           this->sendHermes(this->sendNumericCode(userX, chan, RPL_ENDOFBANLIST, "user is already a chanOp"), send);
         
         }
         else if (mode == 0 && this->findUserinChan(player->sendFd, chan->channelOps) == -1){        
-           this->sendHermes(this->sendNumericCode(userX, chan, RPL_ENDOFBANLIST, "you are already a chanOp"), send);
+           this->sendHermes(this->sendNumericCode(userX, chan, RPL_ENDOFBANLIST, "user is already a chanOp"), send);
         
         }
     }
