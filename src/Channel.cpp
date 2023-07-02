@@ -11,11 +11,20 @@ Channel::Channel(std::string s, std::string topic, std::string pswd) : channelNa
     }
     else
         this->keyMode = false;
+        this->limitMode = false;
+        this->topicProtectMode = false;
+        this->inviteMode = false;
     std::cout << this->channelName + " has been created!" << std::endl;
 }
 Channel::Channel(Channel const &s){
     this->channelName = s.channelName;
     this->channelTopic = s.channelTopic;
+    this->keyMode = s.keyMode;
+    this->inviteMode = s.inviteMode;
+    this->topicProtectMode = s.topicProtectMode;
+    this->limitMode = s.limitMode;
+    this->limit = s.limit;
+    this->channelKey = s.channelKey;
     for (int i = 0; i < s.channelOps.size(); i++){
         this->channelOps.push_back(s.channelOps[i]);
     }

@@ -15,6 +15,15 @@
         this->serverName = s.serverName;
         this->userAuthentified = s.userAuthentified;
         this->userPass = s.userPass;
+        this->oldNick = s.oldNick;
+        this->passSet = s.passSet;
+        this->nickSet = s.nickSet;
+        this->nc      = s.nc;
+        this->oldNick = s.oldNick;
+        for(int i = 0; i != s.invitedChannels.size(); i++)
+            this->invitedChannels.push_back(s.invitedChannels[i]);
+        for(int i = 0; i != s.joinedChannels.size(); i++)
+            this->joinedChannels.push_back(s.joinedChannels[i]);
 
     }
     User::~User(){

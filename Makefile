@@ -2,7 +2,7 @@ CC= g++
 
 FLAGS= #-Wall -Wextra -Werror 
 # can compile following the C++98 standard (C++ first version)
-EXTRA= -fsanitize=address -g
+EXTRA= -fsanitize=address -g -Wall -Wextra -Werror -std=c++98
 
 SRC_PATH= ./src/
 OBJ_PATH= ./objects/

@@ -29,6 +29,11 @@ Server::Server(Server const &p)
     this->passWord = p.passWord;
     this->portNumber = p.portNumber;
     this->users  = p.users;
+    this->gods  = p.gods;
+    this->pollers = p.pollers;
+    this->servChannels = p.servChannels;
+    this->servSocketFd = p.servSocketFd;
+    this->serverName = p.serverName;
 }
 Server::~Server(){}
 
@@ -188,7 +193,7 @@ void    Server::oConnection(int i)
     char            buffer[BUFFER_SIZE];
     User            *currentUser = this->users.find(this->pollers[i].fd)->second;
     int             paramNumber;
-   static std::string     cmd;
+    static std::string     cmd;
 
     std::memset(buffer, 0, sizeof(buffer));
     receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
@@ -266,9 +271,6 @@ void    Server::regularConnection(std::string buffer, User *UserX)
 */
 void    Server::lostConnection(User *user)
 {
-    std::vector<int>::iterator     vit;
-    std::string                    str = "|You have been disconnected from the server|\r\n";
-    std::string                    strII = user->getNickForReply() + " Has left the server!\r\n";
     this->deleteFromPoll(user->sendFd);
     this->users.erase(user->sendFd);
     close(user->sendFd);
