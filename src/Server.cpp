@@ -141,7 +141,7 @@ void    Server::oConnection(int i)
 
     std::memset(buffer, 0, sizeof(buffer));
     receivedBytes = recv(this->pollers[i].fd, buffer, sizeof(buffer) - 1, 0);
-    if (receivedBytes == -1 || receivedBytes == 0)
+    if (receivedBytes == -1 || receivedBytes == 0 || receivedBytes >= 512)
     {
         cmd = "";
         lostConnection(currentUser);

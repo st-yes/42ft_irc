@@ -35,6 +35,7 @@ class User{
         bool                        passSet;
         bool                        nickSet;
         bool                        nc;
+        int                         createdChannels;
     public :
         User();
         User(std::string name, std::string nick, std::string userFullName, std::string userHostName);

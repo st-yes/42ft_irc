@@ -105,7 +105,7 @@ void    Server::handleCmdJoin(std::string *s, User *userX, int paramNum){
         passStore = divideAndConquer2(s[2], userX);
     else
         passStore.push_back("");
-    if (chanStore.empty() || (!passStore.empty() && chanStore.size() != passStore.size())){
+    if (chanStore.empty() || (!s[2].empty() && chanStore.size() != passStore.size())){
         this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Syntax Error!"), send);
         return;
     }
@@ -144,9 +144,9 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
     while(p != tmp.end())
     {
         Channel   *Chanl = this->channelFinder(p->first);
-        if (Chanl == NULL && channelCreation < 2){
+        if (Chanl == NULL && Userx->createdChannels < 2){
             this->newChannel(p, Userx);
-            channelCreation++;
+            Userx->createdChannels++;
         }
         else if (Chanl == NULL && channelCreation >= 2){
             this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_TOOMANYCHANNELS, ""), send);
@@ -166,6 +166,7 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
                 Chanl->channelMembers.push_back(Userx);
                 Userx->joinedChannels.push_back(Chanl);
                 this->sendHermes(this->sendGenericCode(Userx, Chanl, "JOIN", ""), Chanl->channelMembers);
+                this->sendHermes(this->sendNumericCode(Userx, Chanl, RPL_TOPIC, Chanl->channelTopic), send);
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, RPL_NAMREPLY, ""), send);
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, RPL_ENDOFNAMES, ""), send);
             }
@@ -224,6 +225,7 @@ void    Server::handleCmdPart(std::string* str, User* Userx, int paramNumber){
                         break ;
                     }
                 }
+                delete Chanl;
             }
         }
         else{

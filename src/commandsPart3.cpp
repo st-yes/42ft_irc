@@ -15,7 +15,7 @@ void    Server::handleCmdTopic(std::string *params, User *userX, int paramNumber
         else{
             int k = findUserinChan(userX->sendFd, chan->channelMembers);
             if (k != -1){
-                if (params[2] != ""){
+                if (!params[2].empty()){
                     if (chan->topicProtectMode){
                         if (findUserinChan(userX->sendFd, chan->channelOps) != -1){
                             chan->channelTopic = params[2];

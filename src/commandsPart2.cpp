@@ -7,6 +7,10 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
             this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Syntax Error!"), send);
     }
     else{
+        if (dynamic_cast<ircGod*>(userX)){
+            this->sendHermes(this->sendNumericCode(userX, NULL, RPL_YOUREOPER, "You re already a god among the living"), send);
+            return;
+        }
         std::map<std::string, std::string>::iterator it;
         it = this->gods.find(params[1]);
         if (it != this->gods.end() && it->second == params[2]){
@@ -25,7 +29,7 @@ void    Server::handleCmdOper(std::string   *params, User *userX, int paramNumbe
             delete userX;
             elite->setGodPower(this);
             std::vector<User*>send2;
-            send2.push_back(userX);
+            send2.push_back(elite);
             this->sendHermes(this->sendNumericCode(elite, NULL, RPL_YOUREOPER, "GODLY POWERS! HERE WE GO!"), send2);
         }
         else{
