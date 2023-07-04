@@ -33,6 +33,10 @@ Channel::Channel(Channel const &s){
     }
 }
 Channel::~Channel(){
+    if (!this->channelOps.empty())
+        this->channelOps.clear();
+    if (!this->channelMembers.empty())
+        this->channelMembers.clear();
     std::cout << "The Channel : " + channelName + " is unusable anymore!" << std::endl;
 }
 Channel const &Channel::operator=(Channel const &s){

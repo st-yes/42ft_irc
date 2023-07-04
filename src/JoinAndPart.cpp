@@ -126,7 +126,6 @@ void    Server::newChannel(std::unordered_map<std::string, std::string>::iterato
     if (p->second != ""){
         nw->keyMode = true;
         nw->setTheKey(p->second);
-        std::cout << "hna kayna0000>" << nw->GetThekey() << std::endl;
     }
     std::vector<User *>send;
     send.push_back(Userx);

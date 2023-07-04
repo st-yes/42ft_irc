@@ -213,6 +213,12 @@ void    Server::regularConnection(std::string buffer, User *UserX)
 */
 void    Server::lostConnection(User *user)
 {
+    for(int i = 0; i != user->joinedChannels.size(); i++){
+        for (int k = 0; k != user->joinedChannels[i]->channelMembers.size(); k++){
+            if (user->sendFd == user->joinedChannels[i]->channelMembers[k]->sendFd)
+                user->joinedChannels[i]->channelMembers.erase(user->joinedChannels[i]->channelMembers.begin() + k);
+        }
+    }
     this->deleteFromPoll(user->sendFd);
     this->users.erase(user->sendFd);
     close(user->sendFd);

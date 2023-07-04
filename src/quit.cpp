@@ -14,11 +14,11 @@ void Server::handleCmdQuit(std::string	*params, User *userX ,int paramNumber)
         index = this->findUserinChan(userX->sendFd, chan->channelMembers);
             if (index == -1)
                 continue;
-        this->sendHermes(this->sendGenericCode(userX, chan, "PART", reply), chan->channelMembers);
-        this->sendHermes(this->sendGenericCode(userX, chan, "QUIT", reply), chan->channelMembers);
         chan->channelMembers.erase(chan->channelMembers.begin() + index);
         if (indexchanOp != -1)
             chan->channelOps.erase(chan->channelOps.begin() + indexchanOp);
+        this->sendHermes(this->sendGenericCode(userX, chan, "PART", reply), chan->channelMembers);
+        this->sendHermes(this->sendGenericCode(userX, chan, "QUIT", reply), chan->channelMembers);
     }
     this->lostConnection(userX);
 }

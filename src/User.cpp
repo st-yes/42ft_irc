@@ -14,18 +14,27 @@
         this->serverName = s.serverName;
         this->userAuthentified = s.userAuthentified;
         this->userPass = s.userPass;
-        this->oldNick = s.oldNick;
         this->passSet = s.passSet;
         this->nickSet = s.nickSet;
         this->nc      = s.nc;
         this->oldNick = s.oldNick;
+        this->defaultChannel = s.defaultChannel;
+        this->createdChannels = s.createdChannels;
         for(int i = 0; i != s.invitedChannels.size(); i++)
             this->invitedChannels.push_back(s.invitedChannels[i]);
         for(int i = 0; i != s.joinedChannels.size(); i++)
             this->joinedChannels.push_back(s.joinedChannels[i]);
-
+        for(int i = 0; i != s.commandFull.size(); i++)
+            this->commandFull.push_back(s.commandFull[i]);
     }
     User::~User(){
+        if (!this->joinedChannels.empty())
+            this->joinedChannels.clear();
+        if (!this->invitedChannels.empty())
+            this->invitedChannels.clear();
+        if (!this->commandFull.empty())
+            this->commandFull.clear();
+        std::cout << "User has been destroyed" << std::endl;
     }
     User const &User::operator=(User const &s){
         *this = s;
