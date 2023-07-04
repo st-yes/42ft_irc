@@ -211,16 +211,43 @@ void    Server::regularConnection(std::string buffer, User *UserX)
 /*
 * reply message when client lose connection 
 */
-void    Server::lostConnection(User *user)
+// void    Server::lostConnection(User *user)
+// {
+//     for(int i = 0; i != user->joinedChannels.size(); i++){
+//         for (int k = 0; k != user->joinedChannels[i]->channelMembers.size(); k++){
+//             if (user->sendFd == user->joinedChannels[i]->channelMembers[k]->sendFd)
+//               {
+//                 user->joinedChannels[i]->channelMembers.erase(user->joinedChannels[i]->channelMembers.begin() + k);
+//                 //=break;
+//               }
+//         }
+//     }
+//     this->deleteFromPoll(user->sendFd);
+//     this->users.erase(user->sendFd);
+//     close(user->sendFd);
+//     delete user;
+// }
+
+//new lost connection
+void Server::lostConnection(User *user)
 {
-    for(int i = 0; i != user->joinedChannels.size(); i++){
-        for (int k = 0; k != user->joinedChannels[i]->channelMembers.size(); k++){
-            if (user->sendFd == user->joinedChannels[i]->channelMembers[k]->sendFd)
-                user->joinedChannels[i]->channelMembers.erase(user->joinedChannels[i]->channelMembers.begin() + k);
+    Channel* channel;
+
+    for (int i = 0; i < user->joinedChannels.size(); i++)
+    {
+        channel = user->joinedChannels[i];
+        for (int k = 0; k < channel->channelMembers.size(); ++k) {
+            if (user->sendFd == channel->channelMembers[k]->sendFd) {
+                channel->channelMembers.erase(channel->channelMembers.begin() + k);
+                break;
+            }
         }
     }
     this->deleteFromPoll(user->sendFd);
-    this->users.erase(user->sendFd);
+    std::map<int, User*>::iterator it = this->users.find(user->sendFd);
+    if (it != this->users.end()) {
+        this->users.erase(it);
+    }
     close(user->sendFd);
     delete user;
 }

@@ -26,7 +26,7 @@ bool    Server::syntaxCheck(char *p){
     while (i != strlen(p)){ 
         if ((p[i] == '#' && i != 0))
             return true;
-        if (p[i] == ':' || p[i] == ',' || p[i] == 7)
+        if (p[i] == ':' || p[i] == ',')//7?
             return true;
         i++;
     }
@@ -61,7 +61,7 @@ std::vector<std::string>    Server::divideAndConquer(std::string s, User *userX)
             store.push_back(s);
         }
         else{
-            this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist : " + std::string(hold)), send);
+            this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NOSUCHCHANNEL, "Channel does not Exist :" + std::string(hold)), send);
             return store;
         }
     }
@@ -110,7 +110,9 @@ void    Server::handleCmdJoin(std::string *s, User *userX, int paramNum){
         return;
     }
     for (int i = 0; i != chanStore.size(); i++)
+    {
         channels.insert(std::make_pair(chanStore[i], passStore[i]));
+    }
     this->JoinFunc(channels, userX);
     return;
 }

@@ -159,6 +159,7 @@ void	Server::sendHermes(std::string reply, std::vector<User *> recipients){
 	if (recipients.empty())
 		return ;
 	for (int i = 0; i != recipients.size(); i++){
+		correspondence(CLIENT_TO_SERVER, reply);
 		if (send(recipients[i]->sendFd, reply.c_str(), reply.length(), 0) == -1){
 			this->lostConnection(recipients[i]);
 			return;
