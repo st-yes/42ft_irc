@@ -152,14 +152,15 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
         if (Chanl == NULL)
             this->newChannel(p, Userx);
         else{
+            User *chanOp = this->findUserinChan(Userx->sendFd, Chanl->channelOps);
             if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)
                 && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_INVITEONLYCHAN, ""), send);
             }
-            else if (Chanl->limitMode && Chanl->getChanLimit() != 0 && Chanl->channelMembers.size() >= Chanl->getChanLimit()){
+            else if (Chanl->limitMode && Chanl->getChanLimit() != 0 && Chanl->channelMembers.size() >= Chanl->getChanLimit() && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_BADCHANNELKEY, ""), send);
             }
-            else if (Chanl->keyMode && Chanl->GetThekey() != p->second){
+            else if (Chanl->keyMode && Chanl->GetThekey() != p->second && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_BADCHANNELKEY, ""), send);
             }
             else{
