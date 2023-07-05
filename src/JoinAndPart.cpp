@@ -152,7 +152,6 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
         if (Chanl == NULL)
             this->newChannel(p, Userx);
         else{
-            User *chanOp = this->findUserinChan(Userx->sendFd, Chanl->channelOps);
             if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)
                 && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_INVITEONLYCHAN, ""), send);
