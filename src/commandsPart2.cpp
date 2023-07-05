@@ -117,7 +117,7 @@ void    Server::handleCmdModeOpt(std::string *params, User *userX, Channel *Ch){
     for (int i = 1; i != params[2].length(); i++){
         if (params[2].c_str()[i] == 'k' || params[2].c_str()[i] == 'l' || params[2].c_str()[i] == 'o'){
             paramIndex++;
-            if (params[paramIndex] == ""){
+            if (params[paramIndex] == "" && params[2] != "-l"){
                 this->sendHermes(this->sendNumericCode(userX, Ch, ERR_NEEDMOREPARAMS, "Not enough parameters for the option specified"), send);
                 return;
             }
@@ -304,14 +304,16 @@ void    Server::handleCmdModeOptK(User *userX, std::string s, Channel *chan, int
 void    Server::handleCmdModeOptL(User *userX, std::string s, Channel *chan, int mode){
     ircGod  *God = dynamic_cast<ircGod*>(userX);
     std::vector<User *>      send;
+    size_t limit = 0;
     send.push_back(userX);
     if (!God && this->findUserinChan(userX->sendFd, chan->channelOps) == -1){
        this->sendHermes(this->sendNumericCode(userX, chan, RPL_CHANNELMODES, "you are not a chanOp"), send);
         return;
     }
     bool    check = checkNums(s);
-    if (check){
-        size_t limit = stoi(s);
+    if (check || mode == 0){
+        if (mode == 1)
+            limit = stoi(s);
         if (chan->limitMode){
             switch (mode){
                 case 0 :{

@@ -76,7 +76,10 @@ std::vector<std::string>    Server::divideAndConquer2(std::string s, User *userX
     send.push_back(userX);
 
     if(s.empty())
+    {
+        store.clear();
         return store;
+    }
     if (s.find(',') != std::string::npos){
         p = strtok(hold, ",");
         while (p != NULL){
@@ -103,15 +106,16 @@ void    Server::handleCmdJoin(std::string *s, User *userX, int paramNum){
     chanStore = divideAndConquer(s[1], userX);
     if (!s[2].empty())
         passStore = divideAndConquer2(s[2], userX);
-    else
-        passStore.push_back("");
     if (chanStore.empty() || (!s[2].empty() && chanStore.size() != passStore.size())){
         this->sendHermes(this->sendNumericCode(userX, NULL, ERR_NEEDMOREPARAMS, "Syntax Error!"), send);
         return;
     }
     for (int i = 0; i != chanStore.size(); i++)
     {
-        channels.insert(std::make_pair(chanStore[i], passStore[i]));
+        if (!passStore.empty())
+            channels.insert(std::make_pair(chanStore[i], passStore[i]));
+        else
+            channels.insert(std::make_pair(chanStore[i], ""));
     }
     this->JoinFunc(channels, userX);
     return;
@@ -145,19 +149,14 @@ void    Server::JoinFunc(std::unordered_map<std::string, std::string>   tmp, Use
     while(p != tmp.end())
     {
         Channel   *Chanl = this->channelFinder(p->first);
-        if (Chanl == NULL && Userx->createdChannels < 2){
+        if (Chanl == NULL)
             this->newChannel(p, Userx);
-            Userx->createdChannels++;
-        }
-        else if (Chanl == NULL && channelCreation >= 2){
-            this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_TOOMANYCHANNELS, ""), send);
-        }
         else{
             if (Chanl->inviteMode && !channelFinder(Chanl->channelName, Userx->invitedChannels)
                 && findUserinChan(Userx->sendFd, Chanl->channelOps) == -1){
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_INVITEONLYCHAN, ""), send);
             }
-            else if (Chanl->limitMode && Chanl->channelMembers.size() >= Chanl->getChanLimit()){
+            else if (Chanl->limitMode && Chanl->getChanLimit() != 0 && Chanl->channelMembers.size() >= Chanl->getChanLimit()){
                 this->sendHermes(this->sendNumericCode(Userx, Chanl, ERR_BADCHANNELKEY, ""), send);
             }
             else if (Chanl->keyMode && Chanl->GetThekey() != p->second){

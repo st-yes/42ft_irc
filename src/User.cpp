@@ -1,7 +1,7 @@
 #include "../includes/User.hpp"
 
     User::User(){}
-    User::User(std::string name, std::string nick, std::string fullName, std::string hostName) : userName(name), userNick(nick), userFullName(fullName), userHostName(hostName), createdChannels(0){
+    User::User(std::string name, std::string nick, std::string fullName, std::string hostName) : userName(name), userNick(nick), userFullName(fullName), userHostName(hostName){
 
     }
     User::User(User const &s){
