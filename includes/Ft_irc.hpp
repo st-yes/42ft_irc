@@ -13,7 +13,9 @@
 # define MAX_PORT 65535
 # define MIN_PORT 1
 # define BACKLOG 10
-# define BUFFER_SIZE 512
+# define BUFFER_SIZE 5120
+# define DEBUG 0
+# define SERVERNAME "BANANA"
 
 enum	errors
 {

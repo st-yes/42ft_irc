@@ -6,14 +6,6 @@
 # include <map>
 # include "Channel.hpp"
 
-# define MAX_PORT 65535
-# define MIN_PORT 1
-# define BACKLOG 10
-# define BUFFER_SIZE 512
-# define DEBUG 1
-
-# define SERVERNAME "BANANA"
-
 class Channel;
 class User{
     protected :
